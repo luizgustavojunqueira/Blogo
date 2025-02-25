@@ -7,7 +7,42 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 )
+
+const createPost = `-- name: CreatePost :one
+;
+
+
+insert into posts (title, body, created_at, modified_at)
+values (?1, ?2, ?3, ?4)
+returning id, title, body, created_at, modified_at
+`
+
+type CreatePostParams struct {
+	Title      string
+	Body       sql.NullString
+	CreatedAt  sql.NullTime
+	ModifiedAt sql.NullTime
+}
+
+func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
+	row := q.db.QueryRowContext(ctx, createPost,
+		arg.Title,
+		arg.Body,
+		arg.CreatedAt,
+		arg.ModifiedAt,
+	)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Body,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
+}
 
 const getPosts = `-- name: GetPosts :many
 select id, title, body, created_at, modified_at

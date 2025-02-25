@@ -1,0 +1,16 @@
+package templates
+
+import "Blog/internal/repository"
+
+templ Post(post repository.Post) {
+	<article>
+		<header>
+			<h1>{ post.Title }</h1>
+			<p>{ post.CreatedAt.Time.String() }</p>
+			<p>{ post.ModifiedAt.Time.String() }</p>
+		</header>
+		<section>
+			{ post.Body.String }
+		</section>
+	</article>
+}

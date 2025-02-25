@@ -1,0 +1,25 @@
+package templates
+
+import "Blog/internal/repository"
+
+templ MainPage(posts []repository.Post) {
+	<!DOCTYPE html>
+	<html lang="pt-br" class="min-h-screen bg-slate-50">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+			<link href="/static/styles.css" rel="stylesheet"/>
+			<title>ToDo List</title>
+		</head>
+		<body>
+			<ul>
+				for _, post := range posts {
+					<li>
+						@Post(post)
+					</li>
+				}
+			</ul>
+		</body>
+	</html>
+}

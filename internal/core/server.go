@@ -1,7 +1,6 @@
 package core
 
 import (
-	"Blog/internal/handlers"
 	"database/sql"
 	"log"
 	"net/http"
@@ -9,13 +8,20 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 )
 
+type PostHandler interface {
+	GetPosts(w http.ResponseWriter, r *http.Request)
+	CreatePost(w http.ResponseWriter, r *http.Request)
+	ParseMarkdown(w http.ResponseWriter, r *http.Request)
+	Editor(w http.ResponseWriter, r *http.Request)
+}
+
 type Server struct {
 	DB          *sql.DB
 	Migrate     *migrate.Migrate
-	PostHandler *handlers.PostHandler
+	PostHandler PostHandler
 }
 
-func NewServer(db *sql.DB, m *migrate.Migrate, ph *handlers.PostHandler) *Server {
+func NewServer(db *sql.DB, m *migrate.Migrate, ph PostHandler) *Server {
 	return &Server{
 		DB:          db,
 		Migrate:     m,
@@ -27,6 +33,9 @@ func (s *Server) Start(port string) error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	http.HandleFunc("/", s.PostHandler.GetPosts)
+	http.HandleFunc("/editor", s.PostHandler.Editor)
+	http.HandleFunc("/post/new", s.PostHandler.CreatePost)
+	http.HandleFunc("/post/parse", s.PostHandler.ParseMarkdown)
 
 	log.Printf("Server started on port %s", port)
 

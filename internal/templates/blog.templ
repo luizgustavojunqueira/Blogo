@@ -3,23 +3,54 @@ package templates
 import "Blog/internal/repository"
 
 templ MainPage(posts []repository.Post) {
-	<!DOCTYPE html>
-	<html lang="pt-br" class="min-h-screen bg-slate-50">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-			<link href="/static/styles.css" rel="stylesheet"/>
-			<title>ToDo List</title>
-		</head>
-		<body>
-			<ul>
-				for _, post := range posts {
-					<li>
-						@Post(post)
-					</li>
-				}
-			</ul>
-		</body>
-	</html>
+<!DOCTYPE html>
+<html lang="pt-br" class="min-h-screen bg-slate-50">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/static/js/htmx.js"></script>
+    <title>ToDo List</title>
+</head>
+
+<body>
+    <h1>Posts</h1>
+    <form hx-post="/post/new" hx-target="#posts-list" hx-swap="beforeend">
+        <input type="text" name="title" id="title" />
+        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        <input type="text" name="slug" id="slug" />
+        <button type="submit">Create Post</button>
+    </form>
+    <ul id="posts-list">
+        for _, post := range posts {
+        <li>
+            @Post(post)
+        </li>
+        }
+    </ul>
+</body>
+
+</html>
+}
+
+templ Editor() {
+<!DOCTYPE html>
+<html lang="pt-br" class="min-h-screen bg-slate-50">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/static/styles.css" rel="stylesheet" />
+    <script src="/static/js/htmx.js"></script>
+    <title>ToDo List</title>
+</head>
+
+<body>
+    <form hx-post="/post/parse" hx-target="#preview" hx-swap="innerHTML" hx-trigger="keyup delay:500ms">
+        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+    </form>
+    <section id="preview"></section>
+</body>
+
+</html>
 }

@@ -11,7 +11,8 @@ import (
 type Post struct {
 	ID         interface{}
 	Title      string
-	Body       sql.NullString
+	Content    string
+	Slug       string
 	CreatedAt  sql.NullTime
 	ModifiedAt sql.NullTime
 }

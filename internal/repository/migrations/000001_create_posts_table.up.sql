@@ -1,7 +1,8 @@
 CREATE TABLE posts (
     id BIGSERIAL PRIMARY KEY,
     title text not null,
-    body text,
+    content TEXT not null,
+    slug text not null,
     created_at timestamp,
     modified_at timestamp 
 );

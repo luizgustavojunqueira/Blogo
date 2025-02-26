@@ -12,5 +12,6 @@ require (
 	github.com/a-h/templ v0.3.833 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/yuin/goldmark v1.7.8 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 )

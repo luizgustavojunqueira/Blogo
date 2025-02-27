@@ -11,6 +11,9 @@ import (
 	"github.com/luizgustavojunqueira/Blog/internal/templates"
 
 	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
+	"github.com/yuin/goldmark/renderer/html"
 )
 
 type PostHandler struct {
@@ -50,12 +53,32 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 	slug := r.FormValue("slug")
 
+	if title == "" || content == "" || slug == "" {
+		http.Error(w, "Title, content and slug are required", http.StatusBadRequest)
+		return
+	}
+
+	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
+		))
+
+	var parsedContent bytes.Buffer
+	if err := md.Convert([]byte(content), &parsedContent); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	post := repository.CreatePostParams{
-		Title:      title,
-		Content:    content,
-		Slug:       slug,
-		CreatedAt:  sql.NullTime{Time: time.Now(), Valid: true},
-		ModifiedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		Title:         title,
+		Content:       content,
+		ParsedContent: parsedContent.String(),
+		Slug:          slug,
+		CreatedAt:     sql.NullTime{Time: time.Now(), Valid: true},
+		ModifiedAt:    sql.NullTime{Time: time.Now(), Valid: true},
 	}
 
 	createdPost, err := h.queries.CreatePost(ctx, post)
@@ -63,6 +86,8 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("HX-Location", "/")
 
 	page := templates.PostCard(createdPost)
 	page.Render(ctx, w)
@@ -86,14 +111,23 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	title := r.FormValue("title")
 	content := r.FormValue("content")
+	slug := r.FormValue("slug")
+	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
+		))
 
 	var buf bytes.Buffer
-	if err := goldmark.Convert([]byte(content), &buf); err != nil {
+	if err := md.Convert([]byte(content), &buf); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	parsedMakdownRendered := templates.ParsedMarkdown(buf.String())
+	parsedMakdownRendered := templates.ParsedMarkdown(buf.String(), title, slug)
 	parsedMakdownRendered.Render(ctx, w)
 }

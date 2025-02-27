@@ -1,6 +1,6 @@
 package templates
 
-import "github.com/luizgustavjunqueira/Blog/internal/repository"
+import "github.com/luizgustavojunqueira/Blog/internal/repository"
 
 templ MainPage(posts []repository.Post) {
 	<!DOCTYPE html>
@@ -10,17 +10,10 @@ templ MainPage(posts []repository.Post) {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
 			<script src="/static/js/htmx.js"></script>
-			<title>ToDo List</title>
+			<title>Blog</title>
 		</head>
 		<body class="min-h-screen bg-slate-50">
-			<h1>Posts</h1>
-			<a href="/editor">Editor</a>
-			<form hx-post="/post/new" hx-target="#posts-list" hx-swap="beforeend">
-				<input type="text" name="title" id="title"/>
-				<textarea name="content" id="content" cols="30" rows="10"></textarea>
-				<input type="text" name="slug" id="slug"/>
-				<button type="submit">Create Post</button>
-			</form>
+			@header("Blog", "/editor", "Editor")
 			<ul id="posts-list" class="min-h-screen flex flex-col items-center">
 				for _, post := range posts {
 					<li class="bg-gray-700 flex flex-col justify-center w-8/12 m-5 p-3 text-white rounded-lg">
@@ -40,15 +33,63 @@ templ Editor() {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
 			<script src="/static/js/htmx.js"></script>
-			<title>ToDo List</title>
+			<title>Blog</title>
 		</head>
-		<body class="min-h-screen bg-slate-50">
-			<h1>Editor</h1>
-			<a href="/">Home</a>
-			<form hx-post="/post/parse" hx-target="#preview" hx-swap="innerHTML" hx-trigger="keyup delay:500ms">
-				<textarea name="content" id="content" cols="30" rows="10"></textarea>
-			</form>
-			<section id="preview" class="prose lg:prose-xl"></section>
+		<body class="max-h-screen bg-slate-50">
+			@header("Editor", "/", "Back to Home")
+			<main class="grid grid-cols-2 min-h-screen max-h-screen">
+				<form
+					class="w-full h-full flex flex-col justify-center items-center border-slate-700 border-r-5 p-2 "
+					hx-post="/post/parse"
+					hx-target="#preview"
+					hx-swap="innerHTML"
+					hx-trigger="keyup delay:500ms"
+				>
+					<section class="w-full flex flex-col justify-center items-center ">
+						<input
+							class="w-full p-3 text-lg border-1 border-slate-900 rounded-md hover:bg-slate-900 hover:text-white hover:cursor-pointer"
+							type="button"
+							value="Save"
+							hx-post="/post/new"
+							hx-swap="none"
+						/>
+						<label for="title" class="w-full text-lg font-bold">Title</label>
+						<input
+							class="w-full p-3 text-lg border-1 border-slate-900 rounded-md"
+							type="text"
+							name="title"
+							id="title"
+						/>
+						<label for="slug" class="w-full text-lg font-bold">Slug</label>
+						<input
+							class="w-full p-3 text-lg border-1 border-slate-900 rounded-md"
+							type="text"
+							name="slug"
+							id="slug"
+						/>
+						<label for="content" class="w-full text-lg font-bold">Content</label>
+					</section>
+					<textarea
+						class="w-full h-fit min-h-screen p-3 border-1 border-slate-900 rounded-md"
+						name="content"
+						id="content"
+						cols="30"
+						rows="10"
+					></textarea>
+				</form>
+				<section id="preview" class="w-full h-full overflow-scroll p-3  max-w-full max-h-screen"></section>
+			</main>
 		</body>
 	</html>
+}
+
+templ header(title string, redirect string, redirectText string) {
+	<header hx-boost="true" class="bg-slate-700 text-white min-w-full h-14 flex flex-row justify-between p-5">
+		<h1>{ title }</h1>
+		if redirect != "" {
+			<a href={ templ.SafeURL(redirect) }>{ redirectText }</a>
+		} else {
+			<a href="/">{ redirectText }</a>
+		}
+	</header>
 }

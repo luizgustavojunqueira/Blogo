@@ -14,23 +14,25 @@ const createPost = `-- name: CreatePost :one
 ;
 
 
-insert into posts (title, content, slug, created_at, modified_at)
-values (?1, ?2, ?3, ?4, ?5)
-returning id, title, content, slug, created_at, modified_at
+insert into posts (title, content, parsed_content, slug, created_at, modified_at)
+values (?1, ?2, ?3, ?4, ?5, ?6)
+returning id, title, content, parsed_content, slug, created_at, modified_at
 `
 
 type CreatePostParams struct {
-	Title      string
-	Content    string
-	Slug       string
-	CreatedAt  sql.NullTime
-	ModifiedAt sql.NullTime
+	Title         string
+	Content       string
+	ParsedContent string
+	Slug          string
+	CreatedAt     sql.NullTime
+	ModifiedAt    sql.NullTime
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
 	row := q.db.QueryRowContext(ctx, createPost,
 		arg.Title,
 		arg.Content,
+		arg.ParsedContent,
 		arg.Slug,
 		arg.CreatedAt,
 		arg.ModifiedAt,
@@ -40,6 +42,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.ID,
 		&i.Title,
 		&i.Content,
+		&i.ParsedContent,
 		&i.Slug,
 		&i.CreatedAt,
 		&i.ModifiedAt,
@@ -48,7 +51,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 }
 
 const getPosts = `-- name: GetPosts :many
-select id, title, content, slug, created_at, modified_at
+select id, title, content, parsed_content, slug, created_at, modified_at
 from posts
 `
 
@@ -65,6 +68,7 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 			&i.ID,
 			&i.Title,
 			&i.Content,
+			&i.ParsedContent,
 			&i.Slug,
 			&i.CreatedAt,
 			&i.ModifiedAt,

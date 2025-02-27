@@ -9,10 +9,11 @@ import (
 )
 
 type Post struct {
-	ID         interface{}
-	Title      string
-	Content    string
-	Slug       string
-	CreatedAt  sql.NullTime
-	ModifiedAt sql.NullTime
+	ID            interface{}
+	Title         string
+	Content       string
+	ParsedContent string
+	Slug          string
+	CreatedAt     sql.NullTime
+	ModifiedAt    sql.NullTime
 }

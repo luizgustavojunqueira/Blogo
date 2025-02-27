@@ -1,12 +1,14 @@
 package main
 
 import (
-	"Blog/internal/core"
-	"Blog/internal/handlers"
-	"Blog/internal/repository"
 	"database/sql"
 	"log"
 	"os"
+
+	"github.com/luizgustavojunqueira/Blog/internal/handlers"
+	"github.com/luizgustavojunqueira/Blog/internal/repository"
+
+	"github.com/luizgustavojunqueira/Blog/internal/core"
 
 	_ "github.com/mattn/go-sqlite3"
 

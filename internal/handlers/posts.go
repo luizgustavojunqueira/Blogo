@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"Blog/internal/repository"
-	"Blog/internal/templates"
 	"bytes"
 	"database/sql"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/luizgustavojunqueira/Blog/internal/repository"
+	"github.com/luizgustavojunqueira/Blog/internal/templates"
 
 	"github.com/yuin/goldmark"
 )

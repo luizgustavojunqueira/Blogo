@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "Blog/internal/repository"
+import "github.com/luizgustavjunqueira/Blog/internal/repository"
 import "time"
 
 func PostCard(post repository.Post) templ.Component {

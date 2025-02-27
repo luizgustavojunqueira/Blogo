@@ -1,21 +1,15 @@
 package templates
 
 import "Blog/internal/repository"
+import "time"
 
-templ Post(post repository.Post) {
-<article>
-    <header>
-        <h1>{ post.Title }</h1>
-        <p>{ post.CreatedAt.Time.String() }</p>
-        <p>{ post.ModifiedAt.Time.String() }</p>
-    </header>
-    <section>
-        { post.Content }
-        { post.Slug }
-    </section>
-</article>
+templ PostCard(post repository.Post) {
+	<h1>{ post.Title }</h1>
+	<p>{ post.CreatedAt.Time.Format(time.DateTime) }</p>
+	<p>{ post.ModifiedAt.Time.Format(time.DateTime) }</p>
+	<p>{ post.Slug }</p>
 }
 
 templ ParsedMarkdown(content string) {
-@templ.Raw(content)
+	@templ.Raw(content)
 }

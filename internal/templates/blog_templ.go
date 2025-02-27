@@ -31,16 +31,16 @@ func MainPage(posts []repository.Post) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-50\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><script src=\"/static/js/htmx.js\"></script><title>ToDo List</title></head><body><h1>Posts</h1><form hx-post=\"/post/new\" hx-target=\"#posts-list\" hx-swap=\"beforeend\"><input type=\"text\" name=\"title\" id=\"title\"> <textarea name=\"content\" id=\"content\" cols=\"30\" rows=\"10\"></textarea> <input type=\"text\" name=\"slug\" id=\"slug\"> <button type=\"submit\">Create Post</button></form><ul id=\"posts-list\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-50\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><script src=\"/static/js/htmx.js\"></script><title>ToDo List</title></head><body class=\"min-h-screen bg-slate-50\"><h1>Posts</h1><a href=\"/editor\">Editor</a><form hx-post=\"/post/new\" hx-target=\"#posts-list\" hx-swap=\"beforeend\"><input type=\"text\" name=\"title\" id=\"title\"> <textarea name=\"content\" id=\"content\" cols=\"30\" rows=\"10\"></textarea> <input type=\"text\" name=\"slug\" id=\"slug\"> <button type=\"submit\">Create Post</button></form><ul id=\"posts-list\" class=\"min-h-screen flex flex-col items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, post := range posts {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li class=\"bg-gray-700 flex flex-col justify-center w-8/12 m-5 p-3 text-white rounded-lg\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = Post(post).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = PostCard(post).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,7 +78,7 @@ func Editor() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-50\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><script src=\"/static/js/htmx.js\"></script><title>ToDo List</title></head><body><form hx-post=\"/post/parse\" hx-target=\"#preview\" hx-swap=\"innerHTML\" hx-trigger=\"keyup delay:500ms\"><textarea name=\"content\" id=\"content\" cols=\"30\" rows=\"10\"></textarea></form><section id=\"preview\"></section></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-50\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><script src=\"/static/js/htmx.js\"></script><title>ToDo List</title></head><body class=\"min-h-screen bg-slate-50\"><h1>Editor</h1><a href=\"/\">Home</a><form hx-post=\"/post/parse\" hx-target=\"#preview\" hx-swap=\"innerHTML\" hx-trigger=\"keyup delay:500ms\"><textarea name=\"content\" id=\"content\" cols=\"30\" rows=\"10\"></textarea></form><section id=\"preview\" class=\"prose lg:prose-xl\"></section></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -63,7 +63,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := templates.Post(createdPost)
+	page := templates.PostCard(createdPost)
 	page.Render(ctx, w)
 }
 

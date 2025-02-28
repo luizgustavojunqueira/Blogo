@@ -1,13 +1,18 @@
 package templates
 
 import "github.com/luizgustavojunqueira/Blog/internal/repository"
-import "time"
 
 templ PostCard(post repository.Post) {
-<h1>{ post.Title }</h1>
-<p>{ post.CreatedAt.Time.Format(time.DateTime) }</p>
-<p>{ post.ModifiedAt.Time.Format(time.DateTime) }</p>
-<p>{ post.Slug }</p>
+<li class="bg-darkgray/85 hover:bg-darkgray text-white flex flex-col justify-center w-8/12 m-5 p-3 rounded-sm shadow-sm hover:scale-102 transition-all hover:shadow-darkgray dark:hover:shadow-verylightgreen dark:bg-slate-100/85 dark:text-black dark:hover:bg-slate-100"
+    hx-boost="true">
+    <a href={ templ.SafeURL("/post/" + post.Slug) }>
+        <h1 class="text-3xl m-3 mb-4 font-bold">{ post.Title }</h1>
+        <hr class="text-verylightgreen/20 dark:text-black/20" />
+        <section>
+            <p class="m-3">{ post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
+        </section>
+    </a>
+</li>
 }
 
 templ MarkdownPreview(content string, title string, slug string) {
@@ -19,7 +24,8 @@ templ MarkdownPreview(content string, title string, slug string) {
         <p class="m-0 p-0 text-slate-100">Editado em: 2025-02-27 17:04:02</p>
     </section>
 </header>
-<section class="mt-5 prose prose-p:m-0">
+<section
+    class="w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl ">
     @templ.Raw(content)
 </section>
 }
@@ -28,12 +34,11 @@ templ PostView(post repository.Post) {
 <header class="max-w-prose w-full flex flex-col justify-center items-center">
     <h1 class="p-0 m-0 mb-0 text-5xl font-bold">{ post.Title }</h1>
     <section class="mt-2 w-full flex flex-col items-center">
-        <p class="m-0 p-0 font-bold ">Criado: { post.CreatedAt.Time.Format(time.DateTime) }</p>
-        <p class="m-0 p-0 font-bold">Editado: { post.ModifiedAt.Time.Format(time.DateTime) }</p>
+        <p class="m-3">{ post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
     </section>
 </header>
 <section
-    class="w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white ">
+    class="w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl ">
     @templ.Raw(post.ParsedContent)
 </section>
 }

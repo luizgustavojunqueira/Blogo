@@ -31,7 +31,7 @@ func NewServer(db *sql.DB, m *migrate.Migrate, ph PostHandler) *Server {
 }
 
 func (s *Server) Start(port string) error {
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("internal/static"))))
 
 	http.HandleFunc("/", s.PostHandler.GetPosts)
 	http.HandleFunc("/editor", s.PostHandler.Editor)

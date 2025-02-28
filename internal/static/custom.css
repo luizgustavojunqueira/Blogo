@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+    --color-lightgray: #363b3c;
+    --color-darkgray: #222529;
+    --color-verylightgreen: #d5ebdb;
+}

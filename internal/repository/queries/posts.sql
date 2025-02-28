@@ -1,6 +1,7 @@
 -- name: GetPosts :many
 select *
 from posts
+order by created_at desc
 ;
 
 

@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"database/sql"
-	"log"
 	"net/http"
 	"time"
 
@@ -133,8 +132,6 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	slug := r.PathValue("slug")
-
-	log.Println("slug", slug)
 
 	post, err := h.queries.GetPostBySlug(ctx, slug)
 	if err != nil {

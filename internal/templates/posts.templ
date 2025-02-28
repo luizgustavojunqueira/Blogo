@@ -16,12 +16,16 @@ templ PostCard(post repository.Post) {
 }
 
 templ MarkdownPreview(content string, title string, slug string) {
-<header class="rounded-md bg-slate-700 text-white p-3 ">
-    <h1 class="p-0 text-white m-0 mb-0">{ title }</h1>
-    <p class="m-0 p-0">{ slug }</p>
-    <section class="mt-2 w-full flex flex-row justify-between">
-        <p class="m-0 p-0 text-slate-100">Criado em: 2025-02-27 17:04:02</p>
-        <p class="m-0 p-0 text-slate-100">Editado em: 2025-02-27 17:04:02</p>
+<header class="max-w-prose w-full flex flex-col justify-center items-center">
+    <h1 class="p-0 m-0 mb-0 text-5xl font-bold">
+        if title != "" {
+        { title }
+        } else {
+        Title
+        }
+    </h1>
+    <section class="mt-2 w-full flex flex-col items-center">
+        <p class="m-3">Feb 02, 2025, at 19:01</p>
     </section>
 </header>
 <section

@@ -4,7 +4,7 @@ import "github.com/luizgustavojunqueira/Blog/internal/repository"
 
 templ MainPage(posts []repository.Post) {
 <!DOCTYPE html>
-<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-zinc-950">
+<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 
 <head>
     <meta charset="UTF-8" />
@@ -28,7 +28,7 @@ templ MainPage(posts []repository.Post) {
 
 templ Editor() {
 <!DOCTYPE html>
-<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-zinc-950">
+<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 
 <head>
     <meta charset="UTF-8" />
@@ -38,28 +38,30 @@ templ Editor() {
     <title>Blog</title>
 </head>
 
-<body class="min-h-screen bg-slate-100 dark:bg-zinc-950 text-black dark:text-white">
+<body class="min-h-full max-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
     @header("Editor", "/", "Back to Home")
-    <main class="grid grid-cols-2 min-h-screen max-h-screen">
-        <form class="w-full h-full flex flex-col justify-center items-center border-slate-700 border-r-5 p-2 "
-            hx-post="/post/parse" hx-target="#preview" hx-swap="innerHTML" hx-trigger="keyup delay:500ms">
+    <main class="grid grid-cols-2 min-h-full max-h-[calc(100vh-var(--spacing)*17)]">
+        <form
+            class="w-full flex flex-col justify-start items-center border-darkgray dark:border-slate-100 border-r-5 p-2 max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)]  "
+            hx-post="/post/parse" hx-target="#preview" hx-swap="innerHTML" hx-trigger="keyup delay:500ms, load">
             <section class="w-full flex flex-col justify-center items-center ">
                 <input
-                    class="w-full p-3 text-lg border-1 border-slate-900 rounded-md hover:bg-slate-900 hover:text-white hover:cursor-pointer"
+                    class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer"
                     type="button" value="Save" hx-post="/post/new" hx-swap="none" />
                 <label for="title" class="w-full text-lg font-bold">Title</label>
-                <input class="w-full p-3 text-lg border-1 border-slate-900 rounded-md" type="text" name="title"
-                    id="title" />
+                <input class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md" type="text"
+                    name="title" id="title" />
                 <label for="slug" class="w-full text-lg font-bold">Slug</label>
-                <input class="w-full p-3 text-lg border-1 border-slate-900 rounded-md" type="text" name="slug"
-                    id="slug" />
+                <input class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md" type="text"
+                    name="slug" id="slug" />
                 <label for="content" class="w-full text-lg font-bold">Content</label>
             </section>
-            <textarea class="w-full h-fit min-h-screen p-3 border-1 border-slate-900 rounded-md" name="content"
-                id="content" cols="30" rows="10"></textarea>
+            <textarea class="w-full resize-none h-full p-3 border-1 border-darkgray dark:border-slate-100 rounded-md"
+                name="content" id="content" cols="30" rows="10"></textarea>
         </form>
-        <section id="preview" class="w-full h-full overflow-scroll p-3  max-w-full max-h-screen">
-            @MarkdownPreview("", "Title", "Slug")
+        <section id="preview"
+            class="flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)]  ">
+            @MarkdownPreview("", "", "")
         </section>
     </main>
 </body>
@@ -77,7 +79,7 @@ templ header(title string, redirect string, redirectText string) {
 
 templ PostPage(post repository.Post) {
 <!DOCTYPE html>
-<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-zinc-950">
+<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 
 <head>
     <meta charset="UTF-8" />

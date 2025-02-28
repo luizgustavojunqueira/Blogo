@@ -3,93 +3,103 @@ package templates
 import "github.com/luizgustavojunqueira/Blog/internal/repository"
 
 templ MainPage(posts []repository.Post) {
-	<!DOCTYPE html>
-	<html lang="pt-br" class="min-h-screen bg-slate-50">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<link href="/static/styles.css" rel="stylesheet"/>
-			<script src="/static/js/htmx.js"></script>
-			<title>Blog</title>
-		</head>
-		<body class="min-h-screen bg-slate-50">
-			@header("Blog", "/editor", "Editor")
-			<ul id="posts-list" class="min-h-screen flex flex-col items-center">
-				for _, post := range posts {
-					<li class="bg-gray-700 flex flex-col justify-center w-8/12 m-5 p-3 text-white rounded-lg">
-						@PostCard(post)
-					</li>
-				}
-			</ul>
-		</body>
-	</html>
+<!DOCTYPE html>
+<html lang="pt-br" class="min-h-screen bg-slate-50 dark:bg-zinc-950">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/static/styles.css" rel="stylesheet" />
+    <script src="/static/js/htmx.js"></script>
+    <title>Blog</title>
+</head>
+
+<body class="min-h-screen bg-slate-50 dark:bg-zinc-950 text-black dark:text-white">
+    @header(" Blog", "/editor", "Editor")
+    <ul id="posts-list" class="min-h-screen flex flex-col items-center">
+        for _, post := range posts {
+        <li class="bg-gray-700 flex flex-col justify-center w-8/12 m-5 p-3 text-white rounded-lg" hx-boost="true">
+            <a href={ templ.SafeURL("/post/" + post.Slug) }>
+                @PostCard(post)
+            </a>
+        </li>
+        }
+    </ul>
+</body>
+
+</html>
 }
 
 templ Editor() {
-	<!DOCTYPE html>
-	<html lang="pt-br" class="min-h-screen bg-slate-50">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<link href="/static/styles.css" rel="stylesheet"/>
-			<script src="/static/js/htmx.js"></script>
-			<title>Blog</title>
-		</head>
-		<body class="max-h-screen bg-slate-50">
-			@header("Editor", "/", "Back to Home")
-			<main class="grid grid-cols-2 min-h-screen max-h-screen">
-				<form
-					class="w-full h-full flex flex-col justify-center items-center border-slate-700 border-r-5 p-2 "
-					hx-post="/post/parse"
-					hx-target="#preview"
-					hx-swap="innerHTML"
-					hx-trigger="keyup delay:500ms"
-				>
-					<section class="w-full flex flex-col justify-center items-center ">
-						<input
-							class="w-full p-3 text-lg border-1 border-slate-900 rounded-md hover:bg-slate-900 hover:text-white hover:cursor-pointer"
-							type="button"
-							value="Save"
-							hx-post="/post/new"
-							hx-swap="none"
-						/>
-						<label for="title" class="w-full text-lg font-bold">Title</label>
-						<input
-							class="w-full p-3 text-lg border-1 border-slate-900 rounded-md"
-							type="text"
-							name="title"
-							id="title"
-						/>
-						<label for="slug" class="w-full text-lg font-bold">Slug</label>
-						<input
-							class="w-full p-3 text-lg border-1 border-slate-900 rounded-md"
-							type="text"
-							name="slug"
-							id="slug"
-						/>
-						<label for="content" class="w-full text-lg font-bold">Content</label>
-					</section>
-					<textarea
-						class="w-full h-fit min-h-screen p-3 border-1 border-slate-900 rounded-md"
-						name="content"
-						id="content"
-						cols="30"
-						rows="10"
-					></textarea>
-				</form>
-				<section id="preview" class="w-full h-full overflow-scroll p-3  max-w-full max-h-screen"></section>
-			</main>
-		</body>
-	</html>
+<!DOCTYPE html>
+<html lang="pt-br" class="min-h-screen bg-slate-50 dark:bg-zinc-950">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/static/styles.css" rel="stylesheet" />
+    <script src="/static/js/htmx.js"></script>
+    <title>Blog</title>
+</head>
+
+<body class="min-h-screen bg-slate-50 dark:bg-zinc-950 text-black dark:text-white">
+    @header("Editor", "/", "Back to Home")
+    <main class="grid grid-cols-2 min-h-screen max-h-screen">
+        <form class="w-full h-full flex flex-col justify-center items-center border-slate-700 border-r-5 p-2 "
+            hx-post="/post/parse" hx-target="#preview" hx-swap="innerHTML" hx-trigger="keyup delay:500ms">
+            <section class="w-full flex flex-col justify-center items-center ">
+                <input
+                    class="w-full p-3 text-lg border-1 border-slate-900 rounded-md hover:bg-slate-900 hover:text-white hover:cursor-pointer"
+                    type="button" value="Save" hx-post="/post/new" hx-swap="none" />
+                <label for="title" class="w-full text-lg font-bold">Title</label>
+                <input class="w-full p-3 text-lg border-1 border-slate-900 rounded-md" type="text" name="title"
+                    id="title" />
+                <label for="slug" class="w-full text-lg font-bold">Slug</label>
+                <input class="w-full p-3 text-lg border-1 border-slate-900 rounded-md" type="text" name="slug"
+                    id="slug" />
+                <label for="content" class="w-full text-lg font-bold">Content</label>
+            </section>
+            <textarea class="w-full h-fit min-h-screen p-3 border-1 border-slate-900 rounded-md" name="content"
+                id="content" cols="30" rows="10"></textarea>
+        </form>
+        <section id="preview" class="w-full h-full overflow-scroll p-3  max-w-full max-h-screen">
+            @MarkdownPreview("", "Title", "Slug")
+        </section>
+    </main>
+</body>
+
+</html>
 }
 
 templ header(title string, redirect string, redirectText string) {
-	<header hx-boost="true" class="bg-slate-700 text-white min-w-full h-14 flex flex-row justify-between p-5">
-		<h1>{ title }</h1>
-		if redirect != "" {
-			<a href={ templ.SafeURL(redirect) }>{ redirectText }</a>
-		} else {
-			<a href="/">{ redirectText }</a>
-		}
-	</header>
+<header hx-boost="true" class="bg-zinc-800 text-white min-w-full h-14 flex flex-row justify-between p-5">
+    <h1>{ title }</h1>
+    if redirect != "" {
+    <a href={ templ.SafeURL(redirect) }>{ redirectText }</a>
+    } else {
+    <a href="/">{ redirectText }</a>
+    }
+</header>
+}
+
+templ PostPage(post repository.Post) {
+<!DOCTYPE html>
+<html lang="pt-br" class="min-h-screen bg-slate-50 dark:bg-zinc-950">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/static/styles.css" rel="stylesheet" />
+    <script src="/static/js/htmx.js"></script>
+    <title>Blog</title>
+</head>
+
+<body class="min-h-screen bg-slate-50 dark:bg-zinc-950 text-black dark:text-white">
+    @header("Blog", "/", "Back to Home")
+    <section class="flex flex-col justify-center items-center p-4">
+        @PostView(post)
+    </section>
+</body>
+
+</html>
 }

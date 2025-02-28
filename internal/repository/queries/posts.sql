@@ -10,3 +10,9 @@ values (:title, :content, :parsed_content, :slug, :created_at, :modified_at)
 returning *
 ;
 
+-- name: GetPostBySlug :one
+select *
+from posts
+where slug =:slug
+;
+

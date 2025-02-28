@@ -4,22 +4,36 @@ import "github.com/luizgustavojunqueira/Blog/internal/repository"
 import "time"
 
 templ PostCard(post repository.Post) {
-	<h1>{ post.Title }</h1>
-	<p>{ post.CreatedAt.Time.Format(time.DateTime) }</p>
-	<p>{ post.ModifiedAt.Time.Format(time.DateTime) }</p>
-	<p>{ post.Slug }</p>
+<h1>{ post.Title }</h1>
+<p>{ post.CreatedAt.Time.Format(time.DateTime) }</p>
+<p>{ post.ModifiedAt.Time.Format(time.DateTime) }</p>
+<p>{ post.Slug }</p>
 }
 
-templ ParsedMarkdown(content string, title string, slug string) {
-	<header class="rounded-md bg-slate-700 text-white p-3 ">
-		<h1 class="p-0 text-white m-0 mb-0">{ title }</h1>
-		<p class="m-0 p-0">{ slug }</p>
-		<section class="mt-2 w-full flex flex-row justify-between">
-			<p class="m-0 p-0 text-slate-100">Criado em: 2025-02-27 17:04:02</p>
-			<p class="m-0 p-0 text-slate-100">Editado em: 2025-02-27 17:04:02</p>
-		</section>
-	</header>
-	<section class="mt-5 prose prose-p:m-0">
-		@templ.Raw(content)
-	</section>
+templ MarkdownPreview(content string, title string, slug string) {
+<header class="rounded-md bg-slate-700 text-white p-3 ">
+    <h1 class="p-0 text-white m-0 mb-0">{ title }</h1>
+    <p class="m-0 p-0">{ slug }</p>
+    <section class="mt-2 w-full flex flex-row justify-between">
+        <p class="m-0 p-0 text-slate-100">Criado em: 2025-02-27 17:04:02</p>
+        <p class="m-0 p-0 text-slate-100">Editado em: 2025-02-27 17:04:02</p>
+    </section>
+</header>
+<section class="mt-5 prose prose-p:m-0">
+    @templ.Raw(content)
+</section>
+}
+
+templ PostView(post repository.Post) {
+<header class="max-w-prose w-full flex flex-col justify-center items-center">
+    <h1 class="p-0 m-0 mb-0 text-5xl font-bold">{ post.Title }</h1>
+    <section class="mt-2 w-full flex flex-col items-center">
+        <p class="m-0 p-0 font-bold ">Criado: { post.CreatedAt.Time.Format(time.DateTime) }</p>
+        <p class="m-0 p-0 font-bold">Editado: { post.ModifiedAt.Time.Format(time.DateTime) }</p>
+    </section>
+</header>
+<section
+    class="w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white ">
+    @templ.Raw(post.ParsedContent)
+</section>
 }

@@ -40,7 +40,6 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	log.Println("Creating post...")
 	ctx := r.Context()
 
 	err := r.ParseForm()
@@ -94,7 +93,6 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
-	log.Println("Editor...")
 	ctx := r.Context()
 
 	editor := templates.Editor()
@@ -102,7 +100,6 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
-	log.Println("Parsing markdown...")
 	ctx := r.Context()
 
 	err := r.ParseForm()
@@ -128,6 +125,23 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parsedMakdownRendered := templates.ParsedMarkdown(buf.String(), title, slug)
+	parsedMakdownRendered := templates.MarkdownPreview(buf.String(), title, slug)
 	parsedMakdownRendered.Render(ctx, w)
+}
+
+func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	slug := r.PathValue("slug")
+
+	log.Println("slug", slug)
+
+	post, err := h.queries.GetPostBySlug(ctx, slug)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	page := templates.PostPage(post)
+	page.Render(ctx, w)
 }

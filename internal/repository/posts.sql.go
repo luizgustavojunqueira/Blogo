@@ -50,6 +50,29 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 	return i, err
 }
 
+const getPostBySlug = `-- name: GetPostBySlug :one
+;
+
+select id, title, content, parsed_content, slug, created_at, modified_at
+from posts
+where slug =?1
+`
+
+func (q *Queries) GetPostBySlug(ctx context.Context, slug string) (Post, error) {
+	row := q.db.QueryRowContext(ctx, getPostBySlug, slug)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Content,
+		&i.ParsedContent,
+		&i.Slug,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+	)
+	return i, err
+}
+
 const getPosts = `-- name: GetPosts :many
 select id, title, content, parsed_content, slug, created_at, modified_at
 from posts

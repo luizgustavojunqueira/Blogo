@@ -13,7 +13,6 @@ import (
 const createPost = `-- name: CreatePost :one
 ;
 
-
 insert into posts (title, content, parsed_content, slug, created_at, modified_at)
 values (?1, ?2, ?3, ?4, ?5, ?6)
 returning id, title, content, parsed_content, slug, created_at, modified_at
@@ -48,6 +47,19 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.ModifiedAt,
 	)
 	return i, err
+}
+
+const deletePostBySlug = `-- name: DeletePostBySlug :exec
+;
+
+
+delete from posts
+where slug =?1
+`
+
+func (q *Queries) DeletePostBySlug(ctx context.Context, slug string) error {
+	_, err := q.db.ExecContext(ctx, deletePostBySlug, slug)
+	return err
 }
 
 const getPostBySlug = `-- name: GetPostBySlug :one

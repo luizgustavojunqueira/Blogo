@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -94,7 +95,24 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	editor := templates.Editor()
+	slug := r.PathValue("slug")
+
+	fmt.Println(slug)
+
+	if slug != "" {
+
+		post, err := h.queries.GetPostBySlug(ctx, slug)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Post not found: %s", err.Error()), http.StatusNotFound)
+			return
+		}
+
+		page := templates.Editor(post.Content, post.Title, post.Slug)
+		page.Render(ctx, w)
+		return
+	}
+
+	editor := templates.Editor("", "", "")
 	editor.Render(ctx, w)
 }
 
@@ -135,10 +153,26 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 
 	post, err := h.queries.GetPostBySlug(ctx, slug)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Post not found: %s", err.Error()), http.StatusNotFound)
 		return
 	}
 
 	page := templates.PostPage(post)
 	page.Render(ctx, w)
+}
+
+func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	slug := r.PathValue("slug")
+	err := h.queries.DeletePostBySlug(ctx, slug)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Location", "/")
+	w.WriteHeader(http.StatusOK)
+
+	w.Write([]byte("Post deleted"))
 }

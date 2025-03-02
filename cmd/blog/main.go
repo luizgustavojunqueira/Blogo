@@ -20,8 +20,10 @@ import (
 
 func main() {
 	log.Println("Starting server...")
-	if err := godotenv.Load(); err != nil {
-		log.Panic(err)
+	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
+		if err := godotenv.Load(); err != nil {
+			log.Println("No .env file found, using system environment variables")
+		}
 	}
 
 	if os.Getenv("DB_PATH") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" {

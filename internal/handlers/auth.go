@@ -44,7 +44,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expiration := time.Now().Add(1 * time.Minute)
+	expiration := time.Now().Add(1 * time.Hour)
 	cookie := http.Cookie{
 		Name:     "session",
 		Value:    "authenticated",

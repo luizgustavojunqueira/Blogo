@@ -15,6 +15,7 @@ type PostHandler interface {
 	Editor(w http.ResponseWriter, r *http.Request)
 	ViewPost(w http.ResponseWriter, r *http.Request)
 	DeletePost(w http.ResponseWriter, r *http.Request)
+	EditPost(w http.ResponseWriter, r *http.Request)
 }
 
 type Server struct {
@@ -41,6 +42,7 @@ func (s *Server) Start(port string) error {
 	http.HandleFunc("/post/parse", s.PostHandler.ParseMarkdown)
 	http.HandleFunc("/post/{slug}", s.PostHandler.ViewPost)
 	http.HandleFunc("/post/delete/{slug}", s.PostHandler.DeletePost)
+	http.HandleFunc("/post/edit/{slug}", s.PostHandler.EditPost)
 
 	log.Printf("Server started on port %s", port)
 

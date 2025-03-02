@@ -97,8 +97,6 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	fmt.Println(slug)
-
 	if slug != "" {
 
 		post, err := h.queries.GetPostBySlug(ctx, slug)
@@ -107,12 +105,12 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		page := templates.Editor(post.Content, post.Title, post.Slug)
+		page := templates.Editor(post.Content, post.Title, post.Slug, true)
 		page.Render(ctx, w)
 		return
 	}
 
-	editor := templates.Editor("", "", "")
+	editor := templates.Editor("", "", "", false)
 	editor.Render(ctx, w)
 }
 
@@ -175,4 +173,45 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	w.Write([]byte("Post deleted"))
+}
+
+func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	slug := r.PathValue("slug")
+
+	newTitle := r.FormValue("title")
+	newSlug := r.FormValue("slug")
+	newContent := r.FormValue("content")
+
+	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
+		))
+
+	var parsedContent bytes.Buffer
+	if err := md.Convert([]byte(newContent), &parsedContent); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	post := repository.UpdatePostBySlugParams{
+		Title:         newTitle,
+		Slug:          slug,
+		NewSlug:       newSlug,
+		Content:       newContent,
+		ParsedContent: parsedContent.String(),
+		ModifiedAt:    sql.NullTime{Time: time.Now(), Valid: true},
+	}
+
+	err := h.queries.UpdatePostBySlug(ctx, post)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Location", "/")
 }

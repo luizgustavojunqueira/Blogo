@@ -26,7 +26,7 @@ templ MainPage(posts []repository.Post) {
 </html>
 }
 
-templ Editor(content string, title string, slug string) {
+templ Editor(content string, title string, slug string, edit bool) {
 <!DOCTYPE html>
 <html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 
@@ -45,9 +45,15 @@ templ Editor(content string, title string, slug string) {
             class="w-full flex flex-col justify-start items-center border-darkgray dark:border-slate-100 border-r-5 p-2 max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)]  "
             hx-post="/post/parse" hx-target="#preview" hx-swap="innerHTML" hx-trigger="keyup delay:500ms, load">
             <section class="w-full flex flex-col justify-center items-center ">
+                if edit {
+                <input
+                    class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer"
+                    type="button" value="Save" hx-post={ "/post/edit/" + slug } hx-swap="none" />
+                } else {
                 <input
                     class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer"
                     type="button" value="Save" hx-post="/post/new" hx-swap="none" />
+                }
                 <label for="title" class="w-full text-lg font-bold">Title</label>
                 <input class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md" type="text"
                     name="title" id="title" value={ title } />

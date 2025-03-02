@@ -121,3 +121,33 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 	}
 	return items, nil
 }
+
+const updatePostBySlug = `-- name: UpdatePostBySlug :exec
+;
+
+
+update posts
+set title = ?1, slug = ?2, content = ?3, parsed_content = ?4, modified_at = ?5
+where slug =?6
+`
+
+type UpdatePostBySlugParams struct {
+	Title         string
+	NewSlug       string
+	Content       string
+	ParsedContent string
+	ModifiedAt    sql.NullTime
+	Slug          string
+}
+
+func (q *Queries) UpdatePostBySlug(ctx context.Context, arg UpdatePostBySlugParams) error {
+	_, err := q.db.ExecContext(ctx, updatePostBySlug,
+		arg.Title,
+		arg.NewSlug,
+		arg.Content,
+		arg.ParsedContent,
+		arg.ModifiedAt,
+		arg.Slug,
+	)
+	return err
+}

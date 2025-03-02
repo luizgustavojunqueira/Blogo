@@ -22,3 +22,9 @@ delete from posts
 where slug =:slug
 ;
 
+
+-- name: UpdatePostBySlug :exec
+update posts
+set title = :title, slug = :new_slug, content = :content, parsed_content = :parsed_content, modified_at = :modified_at
+where slug =:slug;
+

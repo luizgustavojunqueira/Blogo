@@ -24,6 +24,10 @@ func main() {
 		log.Panic(err)
 	}
 
+	if os.Getenv("DB_PATH") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" {
+		log.Panic("Missing environment variables")
+	}
+
 	db, err := sql.Open("sqlite3", os.Getenv("DB_PATH"))
 	if err != nil {
 		log.Panic(err)
@@ -46,8 +50,9 @@ func main() {
 	queries := repository.New(db)
 
 	ph := handlers.NewPostHandler(queries)
+	ah := handlers.NewAuthHandler(os.Getenv("USERNAME"), os.Getenv("PASSWORD"))
 
-	server := core.NewServer(db, m, ph)
+	server := core.NewServer(db, m, ph, ah)
 	defer server.Close()
 
 	if err := server.MigrateUp(); err != nil {

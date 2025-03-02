@@ -18,17 +18,24 @@ type PostHandler interface {
 	EditPost(w http.ResponseWriter, r *http.Request)
 }
 
+type AuthHandler interface {
+	Login(w http.ResponseWriter, r *http.Request)
+	Logout(w http.ResponseWriter, r *http.Request)
+}
+
 type Server struct {
 	DB          *sql.DB
 	Migrate     *migrate.Migrate
 	PostHandler PostHandler
+	AuthHandler AuthHandler
 }
 
-func NewServer(db *sql.DB, m *migrate.Migrate, ph PostHandler) *Server {
+func NewServer(db *sql.DB, m *migrate.Migrate, ph PostHandler, ah AuthHandler) *Server {
 	return &Server{
 		DB:          db,
 		Migrate:     m,
 		PostHandler: ph,
+		AuthHandler: ah,
 	}
 }
 
@@ -43,6 +50,9 @@ func (s *Server) Start(port string) error {
 	http.HandleFunc("/post/{slug}", s.PostHandler.ViewPost)
 	http.HandleFunc("/post/delete/{slug}", s.PostHandler.DeletePost)
 	http.HandleFunc("/post/edit/{slug}", s.PostHandler.EditPost)
+
+	http.HandleFunc("/login", s.AuthHandler.Login)
+	http.HandleFunc("/logout", s.AuthHandler.Logout)
 
 	log.Printf("Server started on port %s", port)
 

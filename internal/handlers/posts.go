@@ -26,6 +26,15 @@ func NewPostHandler(queries *repository.Queries) *PostHandler {
 	}
 }
 
+func checkAuth(r *http.Request) bool {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return false
+	}
+
+	return cookie.Value == "authenticated"
+}
+
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -35,11 +44,20 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := templates.MainPage(posts)
+	authenticated := checkAuth(r)
+
+	page := templates.MainPage(posts, authenticated)
 	page.Render(ctx, w)
 }
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
+	authenticated := checkAuth(r)
+
+	if !authenticated {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
 	ctx := r.Context()
 
 	err := r.ParseForm()
@@ -88,7 +106,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Location", "/")
 
-	page := templates.PostCard(createdPost)
+	page := templates.PostCard(createdPost, authenticated)
 	page.Render(ctx, w)
 }
 
@@ -96,6 +114,13 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	slug := r.PathValue("slug")
+
+	authenticated := checkAuth(r)
+
+	if !authenticated {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
 
 	if slug != "" {
 
@@ -115,6 +140,13 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
+	authenticated := checkAuth(r)
+
+	if !authenticated {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
 	ctx := r.Context()
 
 	err := r.ParseForm()
@@ -160,6 +192,13 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	authenticated := checkAuth(r)
+
+	if !authenticated {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
 	ctx := r.Context()
 
 	slug := r.PathValue("slug")
@@ -176,6 +215,13 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
+	authenticated := checkAuth(r)
+
+	if !authenticated {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
 	ctx := r.Context()
 
 	slug := r.PathValue("slug")

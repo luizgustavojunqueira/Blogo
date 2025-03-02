@@ -190,7 +190,7 @@ func header(title string, redirect string, redirectText string) templ.Component 
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<header hx-boost=\"true\" class=\"bg-darkgray text-white min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-slate-100 dark:text-black\"><h1 class=\"text-2xl font-bold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<header class=\"bg-darkgray text-white min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-slate-100 dark:text-black\"><h1 class=\"text-2xl font-bold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -78,7 +78,7 @@ templ Editor(content string, title string, slug string, edit bool) {
 }
 
 templ header(title string, redirect string, redirectText string) {
-<header hx-boost="true"
+<header
     class="bg-darkgray text-white min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-slate-100 dark:text-black">
     <h1 class="text-2xl font-bold">{ title }</h1>
     <a class="text-center" href={ templ.SafeURL(redirect) }>{ redirectText }</a>

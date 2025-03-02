@@ -31,20 +31,16 @@ func PostCard(post repository.Post) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<li class=\"bg-darkgray/85 hover:bg-darkgray text-white flex flex-col justify-center w-8/12 m-5 p-3 rounded-sm shadow-sm hover:scale-102 transition-all hover:shadow-darkgray dark:hover:shadow-verylightgreen dark:bg-slate-100/85 dark:text-black dark:hover:bg-slate-100\"><section class=\"flex flex-row justify-between\"><h1 hx-get=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<li class=\"bg-darkgray/85 hover:bg-darkgray text-white flex flex-col justify-center w-8/12 m-5 p-3 rounded-sm shadow-sm hover:scale-102 transition-all hover:shadow-darkgray dark:hover:shadow-verylightgreen dark:bg-slate-100/85 dark:text-black dark:hover:bg-slate-100\"><section class=\"flex flex-row justify-between\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("/post/" + post.Slug)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 9, Col: 41}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		var templ_7745c5c3_Var2 templ.SafeURL = templ.SafeURL("/post/" + post.Slug)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" hx-target=\"body\" class=\"text-3xl m-3 mb-4 font-bold hover:cursor-pointer\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><h1 class=\"text-3xl m-3 mb-4 font-bold hover:cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -52,33 +48,29 @@ func PostCard(post repository.Post) templ.Component {
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(
 			post.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 11, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 12, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h1><section class=\"flex flex-row justify-between items-center w-1/12\"><svg hx-get=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h1></a><section class=\"flex flex-row justify-between items-center w-1/12\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("/editor/" + post.Slug)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 14, Col: 48}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		var templ_7745c5c3_Var4 templ.SafeURL = templ.SafeURL("/editor/" + post.Slug)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" hx-target=\"body\" class=\"fill-black hover:cursor-pointer\" height=\"24px\" width=\"24px\" version=\"1.1\" id=\"Capa_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 306.637 306.637\" xml:space=\"preserve\"><g><g><path d=\"M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z\"></path> <path d=\"M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z\"></path></g></g></svg> <svg hx-delete=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><svg class=\"fill-black hover:cursor-pointer\" height=\"24px\" width=\"24px\" version=\"1.1\" id=\"Capa_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 306.637 306.637\" xml:space=\"preserve\"><g><g><path d=\"M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z\"></path> <path d=\"M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z\"></path></g></g></svg></a> <svg hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/post/delete/" + post.Slug)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 28, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 32, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -91,7 +83,7 @@ func PostCard(post repository.Post) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 45, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 49, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -134,7 +126,7 @@ func MarkdownPreview(content string, title string, slug string) templ.Component 
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 54, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 58, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -146,7 +138,7 @@ func MarkdownPreview(content string, title string, slug string) templ.Component 
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</h1><section class=\"mt-2 w-full flex flex-col items-center\"><p class=\"m-3\">Feb 02, 2025, at 19:01</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</h1><section class=\"mt-2 w-full flex flex-col items-center\"><p class=\"m-3\">Feb 02, 2025, at 19:01</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-red-600\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -190,7 +182,7 @@ func PostView(post repository.Post) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(post.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 71, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 75, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -203,13 +195,13 @@ func PostView(post repository.Post) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 73, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 77, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

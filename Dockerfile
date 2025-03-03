@@ -16,7 +16,7 @@ WORKDIR /
 
 COPY --from=build-stage /app/blog ./blog
 COPY internal/repository/migrations ./internal/repository/migrations
-
+COPY internal/static ./internal/static
 
 EXPOSE 8080
 

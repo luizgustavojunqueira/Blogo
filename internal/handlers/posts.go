@@ -18,12 +18,26 @@ import (
 )
 
 type PostHandler struct {
-	queries *repository.Queries
+	queries  *repository.Queries
+	md       goldmark.Markdown
+	location *time.Location
+	logger   *log.Logger
 }
 
-func NewPostHandler(queries *repository.Queries) *PostHandler {
+func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger) *PostHandler {
+	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
+		))
+
 	return &PostHandler{
-		queries: queries,
+		queries:  queries,
+		md:       md,
+		logger:   logger,
+		location: location,
 	}
 }
 
@@ -36,11 +50,35 @@ func checkAuth(r *http.Request) bool {
 	return cookie.Value == "authenticated"
 }
 
+func validatePost(title, content, slug string) error {
+	if title == "" || content == "" || slug == "" {
+		return fmt.Errorf("Title, content and slug are required")
+	}
+
+	if len(title) > 100 {
+		return fmt.Errorf("Title must be less than 100 characters")
+	} else if len(title) < 5 {
+		return fmt.Errorf("Title must be more than 5 characters")
+	}
+
+	if len(slug) > 100 {
+		return fmt.Errorf("Slug must be less than 100 characters")
+	} else if len(slug) < 5 {
+		return fmt.Errorf("Slug must be more than 5 characters")
+	}
+
+	if len(content) > 10000 {
+		return fmt.Errorf("Content must be less than 10000 characters")
+	}
+	return nil
+}
+
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	posts, err := h.queries.GetPosts(ctx)
 	if err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -63,6 +101,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -71,28 +110,17 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 	slug := r.FormValue("slug")
 
-	if title == "" || content == "" || slug == "" {
-		http.Error(w, "Title, content and slug are required", http.StatusBadRequest)
+	if err := validatePost(title, content, slug); err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
-		goldmark.WithParserOptions(
-			parser.WithAutoHeadingID(),
-		),
-		goldmark.WithRendererOptions(
-			html.WithUnsafe(),
-		))
 
 	var parsedContent bytes.Buffer
-	if err := md.Convert([]byte(content), &parsedContent); err != nil {
+	if err := h.md.Convert([]byte(content), &parsedContent); err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-
-	loc, err := time.LoadLocation("America/Sao_Paulo")
-	if err != nil {
-		log.Panic(err)
 	}
 
 	post := repository.CreatePostParams{
@@ -100,12 +128,13 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Content:       content,
 		ParsedContent: parsedContent.String(),
 		Slug:          slug,
-		CreatedAt:     pgtype.Timestamp{Time: time.Now().In(loc), Valid: true},
-		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(loc), Valid: true},
+		CreatedAt:     pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 	}
 
 	createdPost, err := h.queries.CreatePost(ctx, post)
 	if err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -129,9 +158,9 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if slug != "" {
-
 		post, err := h.queries.GetPostBySlug(ctx, slug)
 		if err != nil {
+			h.logger.Println(err)
 			http.Error(w, fmt.Sprintf("Post not found: %s", err.Error()), http.StatusNotFound)
 			return
 		}
@@ -157,6 +186,7 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -164,16 +194,16 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	slug := r.FormValue("slug")
-	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
-		goldmark.WithParserOptions(
-			parser.WithAutoHeadingID(),
-		),
-		goldmark.WithRendererOptions(
-			html.WithUnsafe(),
-		))
+
+	if err := validatePost(title, content, slug); err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	var buf bytes.Buffer
-	if err := md.Convert([]byte(content), &buf); err != nil {
+	if err := h.md.Convert([]byte(content), &buf); err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -189,6 +219,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 
 	post, err := h.queries.GetPostBySlug(ctx, slug)
 	if err != nil {
+		h.logger.Println(err)
 		http.Error(w, fmt.Sprintf("Post not found: %s", err.Error()), http.StatusNotFound)
 		return
 	}
@@ -208,8 +239,10 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	slug := r.PathValue("slug")
+
 	err := h.queries.DeletePostBySlug(ctx, slug)
 	if err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -236,23 +269,17 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	newSlug := r.FormValue("slug")
 	newContent := r.FormValue("content")
 
-	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
-		goldmark.WithParserOptions(
-			parser.WithAutoHeadingID(),
-		),
-		goldmark.WithRendererOptions(
-			html.WithUnsafe(),
-		))
-
-	var parsedContent bytes.Buffer
-	if err := md.Convert([]byte(newContent), &parsedContent); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := validatePost(newTitle, newContent, newSlug); err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	loc, err := time.LoadLocation("America/Sao_Paulo")
-	if err != nil {
-		log.Panic(err)
+	var parsedContent bytes.Buffer
+	if err := h.md.Convert([]byte(newContent), &parsedContent); err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	post := repository.UpdatePostBySlugParams{
@@ -261,11 +288,12 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		Slug_2:        newSlug,
 		Content:       newContent,
 		ParsedContent: parsedContent.String(),
-		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(loc), Valid: true},
+		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 	}
 
-	err = h.queries.UpdatePostBySlug(ctx, post)
+	err := h.queries.UpdatePostBySlug(ctx, post)
 	if err != nil {
+		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

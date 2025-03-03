@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
 	"github.com/luizgustavojunqueira/Blog/internal/handlers"
 	"github.com/luizgustavojunqueira/Blog/internal/repository"
@@ -55,7 +56,12 @@ func main() {
 
 	queries := repository.New(pool)
 
-	ph := handlers.NewPostHandler(queries)
+	location, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	ph := handlers.NewPostHandler(queries, location, log.Default())
 	ah := handlers.NewAuthHandler(os.Getenv("USERNAME"), os.Getenv("PASSWORD"))
 
 	server := core.NewServer(db, m, ph, ah)

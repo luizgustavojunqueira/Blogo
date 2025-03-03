@@ -7,14 +7,13 @@ package repository
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createPost = `-- name: CreatePost :one
-;
-
 insert into posts (title, content, parsed_content, slug, created_at, modified_at)
-values (?1, ?2, ?3, ?4, ?5, ?6)
+values ($1, $2, $3, $4, $5, $6)
 returning id, title, content, parsed_content, slug, created_at, modified_at
 `
 
@@ -23,12 +22,12 @@ type CreatePostParams struct {
 	Content       string
 	ParsedContent string
 	Slug          string
-	CreatedAt     sql.NullTime
-	ModifiedAt    sql.NullTime
+	CreatedAt     pgtype.Timestamp
+	ModifiedAt    pgtype.Timestamp
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
-	row := q.db.QueryRowContext(ctx, createPost,
+	row := q.db.QueryRow(ctx, createPost,
 		arg.Title,
 		arg.Content,
 		arg.ParsedContent,
@@ -50,28 +49,23 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 }
 
 const deletePostBySlug = `-- name: DeletePostBySlug :exec
-;
-
-
 delete from posts
-where slug =?1
+where slug = $1
 `
 
 func (q *Queries) DeletePostBySlug(ctx context.Context, slug string) error {
-	_, err := q.db.ExecContext(ctx, deletePostBySlug, slug)
+	_, err := q.db.Exec(ctx, deletePostBySlug, slug)
 	return err
 }
 
 const getPostBySlug = `-- name: GetPostBySlug :one
-;
-
 select id, title, content, parsed_content, slug, created_at, modified_at
 from posts
-where slug =?1
+where slug = $1
 `
 
 func (q *Queries) GetPostBySlug(ctx context.Context, slug string) (Post, error) {
-	row := q.db.QueryRowContext(ctx, getPostBySlug, slug)
+	row := q.db.QueryRow(ctx, getPostBySlug, slug)
 	var i Post
 	err := row.Scan(
 		&i.ID,
@@ -92,7 +86,7 @@ order by created_at desc
 `
 
 func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
-	rows, err := q.db.QueryContext(ctx, getPosts)
+	rows, err := q.db.Query(ctx, getPosts)
 	if err != nil {
 		return nil, err
 	}
@@ -113,9 +107,6 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -123,31 +114,28 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 }
 
 const updatePostBySlug = `-- name: UpdatePostBySlug :exec
-;
-
-
 update posts
-set title = ?1, slug = ?2, content = ?3, parsed_content = ?4, modified_at = ?5
-where slug =?6
+set title = $1, slug = $2, content = $3, parsed_content = $4, modified_at = $5
+where slug = $6
 `
 
 type UpdatePostBySlugParams struct {
 	Title         string
-	NewSlug       string
+	Slug          string
 	Content       string
 	ParsedContent string
-	ModifiedAt    sql.NullTime
-	Slug          string
+	ModifiedAt    pgtype.Timestamp
+	Slug_2        string
 }
 
 func (q *Queries) UpdatePostBySlug(ctx context.Context, arg UpdatePostBySlugParams) error {
-	_, err := q.db.ExecContext(ctx, updatePostBySlug,
+	_, err := q.db.Exec(ctx, updatePostBySlug,
 		arg.Title,
-		arg.NewSlug,
+		arg.Slug,
 		arg.Content,
 		arg.ParsedContent,
 		arg.ModifiedAt,
-		arg.Slug,
+		arg.Slug_2,
 	)
 	return err
 }

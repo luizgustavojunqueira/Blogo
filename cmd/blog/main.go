@@ -1,7 +1,8 @@
 package main
 
 import (
-	"database/sql"
+	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -10,12 +11,13 @@ import (
 
 	"github.com/luizgustavojunqueira/Blog/internal/core"
 
-	_ "github.com/mattn/go-sqlite3"
-
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite3"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/joho/godotenv"
+
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
@@ -26,30 +28,34 @@ func main() {
 		}
 	}
 
-	if os.Getenv("DB_PATH") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" {
+	if os.Getenv("DB_URL") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" {
 		log.Panic("Missing environment variables")
 	}
 
-	db, err := sql.Open("sqlite3", os.Getenv("DB_PATH"))
+	fmt.Println(os.Getenv("DB_URL"))
+
+	pool, err := pgxpool.New(context.Background(), os.Getenv("DB_URL"))
+	if err != nil {
+		log.Panic(err)
+	}
+	defer pool.Close()
+
+	db := stdlib.OpenDBFromPool(pool)
+
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		log.Panic(err)
 	}
 
-	driver, errDriver := sqlite3.WithInstance(db, &sqlite3.Config{})
-
-	if errDriver != nil {
-		log.Panic(errDriver)
-	}
-
 	m, errMigrate := migrate.NewWithDatabaseInstance(
 		"file://internal/repository/migrations",
-		"sqlite3", driver)
+		"postgres", driver)
 
 	if errMigrate != nil {
 		log.Panic(errMigrate)
 	}
 
-	queries := repository.New(db)
+	queries := repository.New(pool)
 
 	ph := handlers.NewPostHandler(queries)
 	ah := handlers.NewAuthHandler(os.Getenv("USERNAME"), os.Getenv("PASSWORD"))

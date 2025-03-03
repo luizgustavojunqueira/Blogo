@@ -148,7 +148,7 @@ func MarkdownPreview(content string, title string, slug string) templ.Component 
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</h1><section class=\"mt-2 w-full flex flex-col items-center\"><p class=\"m-3\">Feb 02, 2025, at 19:01</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-red-600\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</h1><section class=\"mt-2 w-full flex flex-col items-center\"><p class=\"m-3\">Feb 02, 2025, at 19:01</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

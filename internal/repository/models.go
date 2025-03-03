@@ -5,15 +5,15 @@
 package repository
 
 import (
-	"database/sql"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Post struct {
-	ID            interface{}
+	ID            int64
 	Title         string
 	Content       string
 	ParsedContent string
 	Slug          string
-	CreatedAt     sql.NullTime
-	ModifiedAt    sql.NullTime
+	CreatedAt     pgtype.Timestamp
+	ModifiedAt    pgtype.Timestamp
 }

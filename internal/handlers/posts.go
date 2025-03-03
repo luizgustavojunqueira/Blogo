@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"bytes"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/luizgustavojunqueira/Blog/internal/repository"
 	"github.com/luizgustavojunqueira/Blog/internal/templates"
 
@@ -94,8 +94,8 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Content:       content,
 		ParsedContent: parsedContent.String(),
 		Slug:          slug,
-		CreatedAt:     sql.NullTime{Time: time.Now(), Valid: true},
-		ModifiedAt:    sql.NullTime{Time: time.Now(), Valid: true},
+		CreatedAt:     pgtype.Timestamp{Time: time.Now(), Valid: true},
+		ModifiedAt:    pgtype.Timestamp{Time: time.Now(), Valid: true},
 	}
 
 	createdPost, err := h.queries.CreatePost(ctx, post)
@@ -247,10 +247,10 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	post := repository.UpdatePostBySlugParams{
 		Title:         newTitle,
 		Slug:          slug,
-		NewSlug:       newSlug,
+		Slug_2:        newSlug,
 		Content:       newContent,
 		ParsedContent: parsedContent.String(),
-		ModifiedAt:    sql.NullTime{Time: time.Now(), Valid: true},
+		ModifiedAt:    pgtype.Timestamp{Time: time.Now(), Valid: true},
 	}
 
 	err := h.queries.UpdatePostBySlug(ctx, post)

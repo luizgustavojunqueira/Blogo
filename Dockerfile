@@ -15,8 +15,10 @@ FROM debian:bookworm-slim AS build-release-stage
 WORKDIR /
 
 COPY --from=build-stage /app/blog ./blog
+COPY internal/repository/migrations ./internal/repository/migrations
+
 
 EXPOSE 8080
 
-ENTRYPOINT ["./blog"]
+ENTRYPOINT ["/blog"]
 

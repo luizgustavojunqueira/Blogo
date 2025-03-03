@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -31,8 +30,6 @@ func main() {
 	if os.Getenv("DB_URL") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" {
 		log.Panic("Missing environment variables")
 	}
-
-	fmt.Println(os.Getenv("DB_URL"))
 
 	pool, err := pgxpool.New(context.Background(), os.Getenv("DB_URL"))
 	if err != nil {

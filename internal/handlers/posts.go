@@ -55,14 +55,14 @@ func validatePost(title, content, slug string) error {
 		return fmt.Errorf("Title, content and slug are required")
 	}
 
-	if len(title) > 100 {
-		return fmt.Errorf("Title must be less than 100 characters")
+	if len(title) > 40 {
+		return fmt.Errorf("Title must be less than 40 characters")
 	} else if len(title) < 5 {
 		return fmt.Errorf("Title must be more than 5 characters")
 	}
 
-	if len(slug) > 100 {
-		return fmt.Errorf("Slug must be less than 100 characters")
+	if len(slug) > 50 {
+		return fmt.Errorf("Slug must be less than 50 characters")
 	} else if len(slug) < 5 {
 		return fmt.Errorf("Slug must be more than 5 characters")
 	}
@@ -194,12 +194,6 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	slug := r.FormValue("slug")
-
-	if err := validatePost(title, content, slug); err != nil {
-		h.logger.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
 
 	var buf bytes.Buffer
 	if err := h.md.Convert([]byte(content), &buf); err != nil {

@@ -35,9 +35,13 @@ templ Editor(content string, title string, slug string, edit bool) {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
 			<script src="/static/js/htmx.js"></script>
+			<script src="/static/js/htmx-response-targets.js"></script>
 			<title>Blog</title>
 		</head>
-		<body class="min-h-full max-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
+		<body
+			hx-ext="response-targets"
+			class="min-h-full max-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white"
+		>
 			@header("Editor", "/", "Back to Home", true)
 			<main class="grid grid-cols-2 min-h-full max-h-[calc(100vh-var(--spacing)*17)]">
 				<form
@@ -54,7 +58,8 @@ templ Editor(content string, title string, slug string, edit bool) {
 								type="button"
 								value="Save"
 								hx-post={ "/post/edit/" + slug }
-								hx-swap="none"
+								hx-target-400="#teste"
+								hx-target-401="#teste"
 							/>
 						} else {
 							<input
@@ -62,9 +67,11 @@ templ Editor(content string, title string, slug string, edit bool) {
 								type="button"
 								value="Save"
 								hx-post="/post/new"
-								hx-swap="none"
+								hx-target-400="#teste"
+								hx-target-401="#teste"
 							/>
 						}
+						<span id="teste" class="text-red-500"></span>
 						<label for="title" class="w-full text-lg font-bold">Title</label>
 						<input
 							class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md"
@@ -95,7 +102,7 @@ templ Editor(content string, title string, slug string, edit bool) {
 				</form>
 				<section
 					id="preview"
-					class="flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)]  "
+					class="flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)] overflow-x-hidden"
 				>
 					@MarkdownPreview(content, title, slug)
 				</section>

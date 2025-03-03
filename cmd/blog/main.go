@@ -21,6 +21,7 @@ import (
 
 func main() {
 	log.Println("Starting server...")
+
 	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
 		if err := godotenv.Load(); err != nil {
 			log.Println("No .env file found, using system environment variables")

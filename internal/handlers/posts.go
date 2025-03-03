@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -89,13 +90,18 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		log.Panic(err)
+	}
+
 	post := repository.CreatePostParams{
 		Title:         title,
 		Content:       content,
 		ParsedContent: parsedContent.String(),
 		Slug:          slug,
-		CreatedAt:     pgtype.Timestamp{Time: time.Now(), Valid: true},
-		ModifiedAt:    pgtype.Timestamp{Time: time.Now(), Valid: true},
+		CreatedAt:     pgtype.Timestamp{Time: time.Now().In(loc), Valid: true},
+		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(loc), Valid: true},
 	}
 
 	createdPost, err := h.queries.CreatePost(ctx, post)
@@ -244,16 +250,21 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		log.Panic(err)
+	}
+
 	post := repository.UpdatePostBySlugParams{
 		Title:         newTitle,
 		Slug:          slug,
 		Slug_2:        newSlug,
 		Content:       newContent,
 		ParsedContent: parsedContent.String(),
-		ModifiedAt:    pgtype.Timestamp{Time: time.Now(), Valid: true},
+		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(loc), Valid: true},
 	}
 
-	err := h.queries.UpdatePostBySlug(ctx, post)
+	err = h.queries.UpdatePostBySlug(ctx, post)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

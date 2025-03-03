@@ -95,7 +95,8 @@ templ PostView(post repository.Post) {
 	<header class="max-w-prose w-full flex flex-col justify-center items-center">
 		<h1 class="p-0 m-0 mb-0 text-5xl font-bold">{ post.Title }</h1>
 		<section class="mt-2 w-full flex flex-col items-center">
-			<p class="m-3">{ post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
+			<p class="m-1">Created At: { post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
+			<p class="m-1">Edited At: { post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
 		</section>
 	</header>
 	<section

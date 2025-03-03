@@ -198,20 +198,33 @@ func PostView(post repository.Post) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</h1><section class=\"mt-2 w-full flex flex-col items-center\"><p class=\"m-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</h1><section class=\"mt-2 w-full flex flex-col items-center\"><p class=\"m-1\">Created At: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 98, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 98, Col: 84}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</p><p class=\"m-1\">Edited At: ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 99, Col: 83}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -219,7 +232,7 @@ func PostView(post repository.Post) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

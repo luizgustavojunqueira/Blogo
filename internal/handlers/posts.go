@@ -70,11 +70,15 @@ func validatePost(title, content, slug string) error {
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	cookie, _ := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.CookieName)
 
-	authenticated, err := h.auth.ValidateToken(cookie.Value)
-	if err != nil {
-		h.logger.Println(err)
+	authenticated := false
+
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+		}
 	}
 
 	posts, err := h.queries.GetPosts(ctx)
@@ -89,13 +93,17 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.CookieName)
 
-	authenticated, err := h.auth.ValidateToken(cookie.Value)
-	if err != nil {
-		h.logger.Println(err)
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
+	authenticated := false
+
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 	}
 
 	if !authenticated {
@@ -156,13 +164,17 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	cookie, _ := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.CookieName)
 
-	authenticated, err := h.auth.ValidateToken(cookie.Value)
-	if err != nil {
-		h.logger.Println(err)
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
+	authenticated := false
+
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 	}
 
 	if !authenticated {
@@ -188,13 +200,17 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.CookieName)
 
-	authenticated, err := h.auth.ValidateToken(cookie.Value)
-	if err != nil {
-		h.logger.Println(err)
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
+	authenticated := false
+
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 	}
 
 	if !authenticated {
@@ -236,11 +252,15 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		h.logger.Println(err)
 	}
 
-	cookie, _ := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.CookieName)
 
-	authenticated, err := h.auth.ValidateToken(cookie.Value)
-	if err != nil {
-		h.logger.Println(err)
+	authenticated := false
+
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+		}
 	}
 
 	page := templates.PostPage(post, authenticated)
@@ -248,13 +268,17 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.CookieName)
 
-	authenticated, err := h.auth.ValidateToken(cookie.Value)
-	if err != nil {
-		h.logger.Println(err)
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
+	authenticated := false
+
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 	}
 
 	if !authenticated {
@@ -280,13 +304,17 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.CookieName)
 
-	authenticated, err := h.auth.ValidateToken(cookie.Value)
-	if err != nil {
-		h.logger.Println(err)
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
+	authenticated := false
+
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 	}
 
 	if !authenticated {

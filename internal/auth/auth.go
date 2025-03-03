@@ -38,6 +38,9 @@ func (auth *Auth) GenerateToken(username string, expiry int64) string {
 }
 
 func (auth *Auth) ValidateToken(token string) (bool, error) {
+	if token == "" {
+		return false, fmt.Errorf("Empty Token")
+	}
 	parts := strings.Split(token, ":")
 	if len(parts) != 3 {
 		return false, fmt.Errorf("Invalid Token")

@@ -30,7 +30,7 @@ func main() {
 		}
 	}
 
-	if os.Getenv("DB_URL") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" {
+	if os.Getenv("DB_URL") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" || os.Getenv("SECRET_KEY") == "" || os.Getenv("COOKIE_NAME") == "" {
 		log.Panic("Missing environment variables")
 	}
 

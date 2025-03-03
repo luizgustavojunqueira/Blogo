@@ -165,12 +165,12 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		page := templates.Editor(post.Content, post.Title, post.Slug, true)
+		page := templates.Editor(post.Content, post.Title, post.Slug, true, authenticated)
 		page.Render(ctx, w)
 		return
 	}
 
-	editor := templates.Editor("", "", "", false)
+	editor := templates.Editor("", "", "", false, authenticated)
 	editor.Render(ctx, w)
 }
 
@@ -202,8 +202,8 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	parsedMakdownRendered := templates.MarkdownPreview(buf.String(), title, slug)
-	parsedMakdownRendered.Render(ctx, w)
+	markdown := templates.Markdown(buf.String(), title, slug, time.Now(), time.Now())
+	markdown.Render(ctx, w)
 }
 
 func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
@@ -218,7 +218,9 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := templates.PostPage(post)
+	authenticated := checkAuth(r)
+
+	page := templates.PostPage(post, authenticated)
 	page.Render(ctx, w)
 }
 
@@ -278,8 +280,8 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 
 	post := repository.UpdatePostBySlugParams{
 		Title:         newTitle,
-		Slug:          slug,
-		Slug_2:        newSlug,
+		Slug:          newSlug,
+		Slug_2:        slug,
 		Content:       newContent,
 		ParsedContent: parsedContent.String(),
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},

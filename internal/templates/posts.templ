@@ -1,6 +1,7 @@
 package templates
 
 import "github.com/luizgustavojunqueira/Blog/internal/repository"
+import "time"
 
 templ PostCard(post repository.Post, authenticated bool) {
 	<li
@@ -64,38 +65,17 @@ templ PostCard(post repository.Post, authenticated bool) {
 	</li>
 }
 
-templ MarkdownPreview(content string, title string, slug string) {
+templ Markdown(content, title, slug string, createdAt, modifiedAt time.Time) {
 	<header class="max-w-prose w-full flex flex-col justify-center items-center">
-		<h1 class="p-0 m-0 mb-0 text-5xl/15 font-bold break-all">
-			if title != "" {
-				{ title }
-			} else {
-				Title
-			}
-		</h1>
+		<h1 class="p-0 m-0 mb-0 text-5xl/15 font-bold break-all ">{ title }</h1>
 		<section class="mt-2 w-full flex flex-col items-center">
-			<p class="m-1">Created At: Feb 02, 2025, at 19:01</p>
-			<p class="m-1">Edited At: Feb 02, 2025, at 19:01</p>
+			<p class="m-1">Created At: { createdAt.Format("Jan 01, 2006, at 15:04") }</p>
+			<p class="m-1">Edited At: { modifiedAt.Format("Jan 01, 2006, at 15:04") }</p>
 		</section>
 	</header>
 	<section
 		class="w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white prose-p:break-all flex-wrap"
 	>
 		@templ.Raw(content)
-	</section>
-}
-
-templ PostView(post repository.Post) {
-	<header class="max-w-prose w-full flex flex-col justify-center items-center">
-		<h1 class="p-0 m-0 mb-0 text-5xl/15 font-bold break-all ">{ post.Title }</h1>
-		<section class="mt-2 w-full flex flex-col items-center">
-			<p class="m-1">Created At: { post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
-			<p class="m-1">Edited At: { post.ModifiedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
-		</section>
-	</header>
-	<section
-		class="w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white prose-p:break-all flex-wrap"
-	>
-		@templ.Raw(post.ParsedContent)
 	</section>
 }

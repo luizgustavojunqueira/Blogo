@@ -4,18 +4,17 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/luizgustavojunqueira/Blog/internal/auth"
 	"github.com/luizgustavojunqueira/Blog/internal/templates"
 )
 
 type AuthHandler struct {
-	username string
-	password string
+	auth *auth.Auth
 }
 
-func NewAuthHandler(username, password string) *AuthHandler {
+func NewAuthHandler(auth *auth.Auth) *AuthHandler {
 	return &AuthHandler{
-		username: username,
-		password: password,
+		auth: auth,
 	}
 }
 
@@ -39,16 +38,19 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	if username != h.username || password != h.password {
+	if username != h.auth.Username || password != h.auth.Password {
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
 
-	expiration := time.Now().Add(1 * time.Hour)
+	expiry := time.Now().Unix() + h.auth.TokenValidity
+
+	token := h.auth.GenerateToken(username, expiry)
+
 	cookie := http.Cookie{
-		Name:     "session",
-		Value:    "authenticated",
-		Expires:  expiration,
+		Name:     h.auth.CookieName,
+		Value:    token,
+		Expires:  time.Unix(expiry, 0),
 		HttpOnly: true,
 	}
 

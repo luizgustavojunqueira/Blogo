@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/luizgustavojunqueira/Blog/internal/auth"
 	"github.com/luizgustavojunqueira/Blog/internal/handlers"
 	"github.com/luizgustavojunqueira/Blog/internal/repository"
 
@@ -61,8 +62,10 @@ func main() {
 		log.Panic(err)
 	}
 
-	ph := handlers.NewPostHandler(queries, location, log.Default())
-	ah := handlers.NewAuthHandler(os.Getenv("USERNAME"), os.Getenv("PASSWORD"))
+	auth := auth.NewAuth(os.Getenv("USERNAME"), os.Getenv("PASSWORD"), os.Getenv("SECRET_KEY"), os.Getenv("COOKIE_NAME"), 3600)
+
+	ph := handlers.NewPostHandler(queries, location, log.Default(), auth)
+	ah := handlers.NewAuthHandler(auth)
 
 	server := core.NewServer(db, m, ph, ah)
 	defer server.Close()

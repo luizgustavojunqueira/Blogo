@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/luizgustavojunqueira/Blog/internal/auth"
 	"github.com/luizgustavojunqueira/Blog/internal/repository"
 	"github.com/luizgustavojunqueira/Blog/internal/templates"
 
@@ -22,9 +23,10 @@ type PostHandler struct {
 	md       goldmark.Markdown
 	location *time.Location
 	logger   *log.Logger
+	auth     *auth.Auth
 }
 
-func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger) *PostHandler {
+func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger, auth *auth.Auth) *PostHandler {
 	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
@@ -38,16 +40,8 @@ func NewPostHandler(queries *repository.Queries, location *time.Location, logger
 		md:       md,
 		logger:   logger,
 		location: location,
+		auth:     auth,
 	}
-}
-
-func checkAuth(r *http.Request) bool {
-	cookie, err := r.Cookie("session")
-	if err != nil {
-		return false
-	}
-
-	return cookie.Value == "authenticated"
 }
 
 func validatePost(title, content, slug string) error {
@@ -76,6 +70,13 @@ func validatePost(title, content, slug string) error {
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	cookie, _ := r.Cookie(h.auth.CookieName)
+
+	authenticated, err := h.auth.ValidateToken(cookie.Value)
+	if err != nil {
+		h.logger.Println(err)
+	}
+
 	posts, err := h.queries.GetPosts(ctx)
 	if err != nil {
 		h.logger.Println(err)
@@ -83,14 +84,19 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authenticated := checkAuth(r)
-
 	page := templates.MainPage(posts, authenticated)
 	page.Render(ctx, w)
 }
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	authenticated := checkAuth(r)
+	cookie, _ := r.Cookie(h.auth.CookieName)
+
+	authenticated, err := h.auth.ValidateToken(cookie.Value)
+	if err != nil {
+		h.logger.Println(err)
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -99,7 +105,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -150,7 +156,14 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	authenticated := checkAuth(r)
+	cookie, _ := r.Cookie(h.auth.CookieName)
+
+	authenticated, err := h.auth.ValidateToken(cookie.Value)
+	if err != nil {
+		h.logger.Println(err)
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -175,7 +188,14 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
-	authenticated := checkAuth(r)
+	cookie, _ := r.Cookie(h.auth.CookieName)
+
+	authenticated, err := h.auth.ValidateToken(cookie.Value)
+	if err != nil {
+		h.logger.Println(err)
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -184,7 +204,7 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -214,18 +234,28 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 	post, err := h.queries.GetPostBySlug(ctx, slug)
 	if err != nil {
 		h.logger.Println(err)
-		http.Error(w, fmt.Sprintf("Post not found: %s", err.Error()), http.StatusNotFound)
-		return
 	}
 
-	authenticated := checkAuth(r)
+	cookie, _ := r.Cookie(h.auth.CookieName)
+
+	authenticated, err := h.auth.ValidateToken(cookie.Value)
+	if err != nil {
+		h.logger.Println(err)
+	}
 
 	page := templates.PostPage(post, authenticated)
 	page.Render(ctx, w)
 }
 
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
-	authenticated := checkAuth(r)
+	cookie, _ := r.Cookie(h.auth.CookieName)
+
+	authenticated, err := h.auth.ValidateToken(cookie.Value)
+	if err != nil {
+		h.logger.Println(err)
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -236,7 +266,7 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	err := h.queries.DeletePostBySlug(ctx, slug)
+	err = h.queries.DeletePostBySlug(ctx, slug)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -250,7 +280,14 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
-	authenticated := checkAuth(r)
+	cookie, _ := r.Cookie(h.auth.CookieName)
+
+	authenticated, err := h.auth.ValidateToken(cookie.Value)
+	if err != nil {
+		h.logger.Println(err)
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -287,7 +324,7 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 	}
 
-	err := h.queries.UpdatePostBySlug(ctx, post)
+	err = h.queries.UpdatePostBySlug(ctx, post)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -24,9 +24,10 @@ type PostHandler struct {
 	location *time.Location
 	logger   *log.Logger
 	auth     *auth.Auth
+	blogName string
 }
 
-func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger, auth *auth.Auth) *PostHandler {
+func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger, auth *auth.Auth, blogName string) *PostHandler {
 	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
@@ -41,6 +42,7 @@ func NewPostHandler(queries *repository.Queries, location *time.Location, logger
 		logger:   logger,
 		location: location,
 		auth:     auth,
+		blogName: blogName,
 	}
 }
 
@@ -88,7 +90,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := templates.MainPage(posts, authenticated)
+	page := templates.MainPage(h.blogName, posts, authenticated)
 	page.Render(ctx, w)
 }
 
@@ -190,12 +192,12 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		page := templates.Editor(post.Content, post.Title, post.Slug, true, authenticated)
+		page := templates.Editor(h.blogName, post.Content, post.Title, post.Slug, true, authenticated)
 		page.Render(ctx, w)
 		return
 	}
 
-	editor := templates.Editor("", "", "", false, authenticated)
+	editor := templates.Editor(h.blogName, "", "", "", false, authenticated)
 	editor.Render(ctx, w)
 }
 
@@ -263,7 +265,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	page := templates.PostPage(post, authenticated)
+	page := templates.PostPage(h.blogName, post, authenticated)
 	page.Render(ctx, w)
 }
 

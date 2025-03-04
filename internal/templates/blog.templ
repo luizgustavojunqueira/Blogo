@@ -3,21 +3,22 @@ package templates
 import "github.com/luizgustavojunqueira/Blogo/internal/repository"
 import "time"
 
-templ MainPage(posts []repository.Post, authenticated bool) {
+templ MainPage(blogname string, posts []repository.Post, authenticated bool) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
+			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
 			<title>Blogo</title>
 		</head>
 		<body class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
 			if authenticated {
-				@header("Luiz Junqueira", []string{"New Post", "Logout"}, []string{"/editor", "/logout"})
+				@header(blogname, []string{"New Post", "Logout"}, []string{"/editor", "/logout"})
 			} else {
-				@header("Luiz Junqueira", []string{"Login"}, []string{"/login"})
+				@header(blogname, []string{"Login"}, []string{"/login"})
 			}
 			<ul id="posts-list" class="min-h-screen flex flex-col items-center">
 				for _, post := range posts {
@@ -28,13 +29,14 @@ templ MainPage(posts []repository.Post, authenticated bool) {
 	</html>
 }
 
-templ Editor(content string, title string, slug string, edit bool, authenticated bool) {
+templ Editor(blogname string, content string, title string, slug string, edit bool, authenticated bool) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
+			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
 			<script src="/static/js/htmx-response-targets.js"></script>
 			<title>Blogo</title>
@@ -44,9 +46,9 @@ templ Editor(content string, title string, slug string, edit bool, authenticated
 			class="min-h-full max-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white"
 		>
 			if authenticated {
-				@header("Luiz Junqueira", []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
+				@header(blogname, []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
 			} else {
-				@header("Luiz Junqueira", []string{"Back to Home"}, []string{"/"})
+				@header(blogname, []string{"Back to Home"}, []string{"/"})
 			}
 			<main class="grid grid-cols-2 min-h-full max-h-[calc(100vh-var(--spacing)*17)]">
 				<form
@@ -129,22 +131,23 @@ templ header(title string, linksNames []string, links []string) {
 	</header>
 }
 
-templ PostPage(post repository.Post, authenticated bool) {
+templ PostPage(blogname string, post repository.Post, authenticated bool) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
+			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
 			<title>Blogo</title>
 		</head>
 		<body class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
 			if authenticated {
-				@header("Luiz Junqueira", []string{"Back to Home", "Edit", "Logout"}, []string{"/", "/editor/" + post.Slug,
+				@header(blogname, []string{"Back to Home", "Edit", "Logout"}, []string{"/", "/editor/" + post.Slug,
 					"/logout"})
 			} else {
-				@header("Luiz Junqueira", []string{"Back to Home"}, []string{"/"})
+				@header(blogname, []string{"Back to Home"}, []string{"/"})
 			}
 			<section class="flex flex-col justify-center items-center p-4 pt-10">
 				@Markdown(post.ParsedContent, post.Title, post.Slug, post.CreatedAt.Time, post.ModifiedAt.Time)
@@ -153,19 +156,20 @@ templ PostPage(post repository.Post, authenticated bool) {
 	</html>
 }
 
-templ LoginPage() {
+templ LoginPage(blogname string) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
+			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
 			<script src="/static/js/htmx-response-targets.js"></script>
 			<title>Blogo</title>
 		</head>
 		<body class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
-			@header("Luiz Junqueira", []string{"Back to Home"}, []string{"/"})
+			@header(blogname, []string{"Back to Home"}, []string{"/"})
 			<main class="flex flex-col justify-center items-center p-4 pt-10">
 				<form
 					class="flex flex-col justify-center items-center border-darkgray dark:border-slate-100  p-2"

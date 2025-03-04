@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -9,12 +10,16 @@ import (
 )
 
 type AuthHandler struct {
-	auth *auth.Auth
+	auth     *auth.Auth
+	logger   *log.Logger
+	blogName string
 }
 
-func NewAuthHandler(auth *auth.Auth) *AuthHandler {
+func NewAuthHandler(auth *auth.Auth, logger *log.Logger, blogName string) *AuthHandler {
 	return &AuthHandler{
-		auth: auth,
+		auth:     auth,
+		logger:   logger,
+		blogName: blogName,
 	}
 }
 
@@ -23,7 +28,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 		ctx := r.Context()
 
-		page := templates.LoginPage()
+		page := templates.LoginPage(h.blogName)
 		page.Render(ctx, w)
 
 		return

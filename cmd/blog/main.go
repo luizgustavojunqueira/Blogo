@@ -7,10 +7,8 @@ import (
 	"time"
 
 	"github.com/luizgustavojunqueira/Blogo/internal/auth"
-	"github.com/luizgustavojunqueira/Blogo/internal/handlers"
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
-
-	"github.com/luizgustavojunqueira/Blogo/internal/core"
+	"github.com/luizgustavojunqueira/Blogo/pkg/blogo"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -22,16 +20,11 @@ import (
 )
 
 func main() {
-	log.Println("Starting server...")
-
+	// Load environment variables from .env file if not running on Railway
 	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
 		if err := godotenv.Load(); err != nil {
 			log.Println("No .env file found, using system environment variables")
 		}
-	}
-
-	if os.Getenv("DB_URL") == "" || os.Getenv("SERVER_PORT") == "" || os.Getenv("USERNAME") == "" || os.Getenv("PASSWORD") == "" || os.Getenv("SECRET_KEY") == "" || os.Getenv("COOKIE_NAME") == "" {
-		log.Panic("Missing environment variables")
 	}
 
 	pool, err := pgxpool.New(context.Background(), os.Getenv("DB_URL"))
@@ -55,6 +48,10 @@ func main() {
 		log.Panic(errMigrate)
 	}
 
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Panic("Failed to run migrations: ", err)
+	}
+
 	queries := repository.New(pool)
 
 	location, err := time.LoadLocation("America/Sao_Paulo")
@@ -62,23 +59,24 @@ func main() {
 		log.Panic(err)
 	}
 
-	auth := auth.NewAuth(os.Getenv("USERNAME"), os.Getenv("PASSWORD"), os.Getenv("SECRET_KEY"), os.Getenv("COOKIE_NAME"), 3600)
-
-	ph := handlers.NewPostHandler(queries, location, log.Default(), auth)
-	ah := handlers.NewAuthHandler(auth)
-
-	server := core.NewServer(db, m, ph, ah)
-	defer server.Close()
-
-	if err := server.MigrateUp(); err != nil {
+	blog, err := blogo.NewBlogo(&blogo.Config{
+		BlogName: "Luiz Gustavo Junqueira",
+		Port:     os.Getenv("SERVER_PORT"),
+		DB:       db,
+		Auth: &auth.Auth{
+			Username:      os.Getenv("USERNAME"),
+			Password:      os.Getenv("PASSWORD"),
+			SecretKey:     os.Getenv("SECRET_KEY"),
+			CookieName:    os.Getenv("COOKIE_NAME"),
+			TokenValidity: 3600,
+		},
+		Logger:   log.New(os.Stdout, "", log.LstdFlags),
+		Location: location,
+		Queries:  queries,
+	})
+	if err != nil {
 		log.Panic(err)
 	}
 
-	serverPort := os.Getenv("SERVER_PORT")
-
-	if err := server.Start(":" + serverPort); err != nil {
-		log.Panic(err)
-	}
-
-	log.Println("Server stopped")
+	blog.Start()
 }

@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/luizgustavojunqueira/Blog/internal/auth"
-	"github.com/luizgustavojunqueira/Blog/internal/repository"
-	"github.com/luizgustavojunqueira/Blog/internal/templates"
+	"github.com/luizgustavojunqueira/Blogo/internal/auth"
+	"github.com/luizgustavojunqueira/Blogo/internal/repository"
+	"github.com/luizgustavojunqueira/Blogo/internal/templates"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"

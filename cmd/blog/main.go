@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/luizgustavojunqueira/Blog/internal/auth"
-	"github.com/luizgustavojunqueira/Blog/internal/handlers"
-	"github.com/luizgustavojunqueira/Blog/internal/repository"
+	"github.com/luizgustavojunqueira/Blogo/internal/auth"
+	"github.com/luizgustavojunqueira/Blogo/internal/handlers"
+	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 
-	"github.com/luizgustavojunqueira/Blog/internal/core"
+	"github.com/luizgustavojunqueira/Blogo/internal/core"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"

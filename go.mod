@@ -1,4 +1,4 @@
-module github.com/luizgustavojunqueira/Blog
+module github.com/luizgustavojunqueira/Blogo
 
 go 1.23.5
 

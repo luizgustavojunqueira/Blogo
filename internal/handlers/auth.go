@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/luizgustavojunqueira/Blog/internal/auth"
-	"github.com/luizgustavojunqueira/Blog/internal/templates"
+	"github.com/luizgustavojunqueira/Blogo/internal/auth"
+	"github.com/luizgustavojunqueira/Blogo/internal/templates"
 )
 
 type AuthHandler struct {

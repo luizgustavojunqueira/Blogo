@@ -39,7 +39,7 @@ func MainPage(blogname, title string, posts []repository.Post, authenticated boo
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 15, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 16, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -106,7 +106,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(pagetitle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 42, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 46, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -139,7 +139,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/post/edit/" + slug)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 67, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 64, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -162,7 +162,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 88, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 74, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -175,7 +175,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(slug)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 96, Col: 19}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 77, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -188,7 +188,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(content)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 107, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 82, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -238,7 +238,7 @@ func header(title string, linksNames []string, links []string) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 125, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 98, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -258,14 +258,15 @@ func header(title string, linksNames []string, links []string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(
+				name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 128, Col: 106}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 103, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -312,7 +313,7 @@ func PostPage(blogname, title string, post repository.Post, authenticated bool) 
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 143, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 120, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -378,7 +379,7 @@ func LoginPage(blogname, title string) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 169, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 149, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -392,7 +393,7 @@ func LoginPage(blogname, title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<main class=\"flex flex-col justify-center items-center p-4 pt-10\"><form class=\"flex flex-col justify-center items-center border-darkgray dark:border-slate-100  p-2\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer\" type=\"submit\" value=\"Login\"></form></main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<main class=\"flex flex-col justify-center items-center p-4 pt-10\"><form class=\"flex flex-col justify-center items-center rounded-md p-2 dark:bg-slate-100 bg-darkgray dark:text-darkgray text-slate-100\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"w-full p-3 mt-2 text-lg  bg-slate-100 dark:bg-darkgray rounded-md\n                text-darkgray dark:text-slate-100 hover:bg-slate-600 hover:text-slate-100 hover:cursor-pointer transition-colors\" type=\"submit\" value=\"Login\"></form></main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

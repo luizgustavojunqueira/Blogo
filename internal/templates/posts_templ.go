@@ -49,7 +49,7 @@ func PostCard(post repository.Post, authenticated bool) templ.Component {
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(
 			post.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 14, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 13, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -69,14 +69,14 @@ func PostCard(post repository.Post, authenticated bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><svg class=\"fill-black hover:cursor-pointer\" height=\"24px\" width=\"24px\" version=\"1.1\" id=\"Capa_1\" viewBox=\"0 0 306.637 306.637\"><g><g><path d=\"M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z\"></path> <path d=\"M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z\"></path></g></g></svg></a> <svg hx-delete=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><svg class=\"fill-white hover:cursor-pointer dark:fill-black\" height=\"24px\" width=\"24px\" version=\"1.1\" id=\"Capa_1\" viewBox=\"0 0 306.637 306.637\"><g><g><path d=\"M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z\"></path> <path d=\"M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z\"></path></g></g></svg></a> <svg hx-delete=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/post/delete/" + post.Slug)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 41, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 33, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -94,7 +94,7 @@ func PostCard(post repository.Post, authenticated bool) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 63, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 50, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -136,7 +136,7 @@ func Markdown(content, title, slug string, createdAt, modifiedAt time.Time) temp
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 70, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 57, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -149,7 +149,7 @@ func Markdown(content, title, slug string, createdAt, modifiedAt time.Time) temp
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(createdAt.Format("Jan 01, 2006, at 15:04"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 72, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 59, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -162,7 +162,7 @@ func Markdown(content, title, slug string, createdAt, modifiedAt time.Time) temp
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(modifiedAt.Format("Jan 01, 2006, at 15:04"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 73, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/posts.templ`, Line: 60, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

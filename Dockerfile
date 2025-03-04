@@ -9,7 +9,7 @@ COPY . ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o blog ./cmd/blog/main.go
 
-# Deploy the application binary into a lean image
+# Deploy the application binary into a clean image
 FROM debian:bookworm-slim AS build-release-stage
 
 WORKDIR /

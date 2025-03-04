@@ -61,6 +61,7 @@ func main() {
 
 	blog, err := blogo.NewBlogo(&blogo.Config{
 		BlogName: "Luiz Gustavo Junqueira",
+		Title:    "Luiz Gustavo",
 		Port:     os.Getenv("SERVER_PORT"),
 		DB:       db,
 		Auth: &auth.Auth{

@@ -19,15 +19,16 @@ import (
 )
 
 type PostHandler struct {
-	queries  *repository.Queries
-	md       goldmark.Markdown
-	location *time.Location
-	logger   *log.Logger
-	auth     *auth.Auth
-	blogName string
+	queries   *repository.Queries
+	md        goldmark.Markdown
+	location  *time.Location
+	logger    *log.Logger
+	auth      *auth.Auth
+	blogName  string
+	pagetitle string
 }
 
-func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger, auth *auth.Auth, blogName string) *PostHandler {
+func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger, auth *auth.Auth, blogName, pagetitle string) *PostHandler {
 	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
@@ -37,12 +38,13 @@ func NewPostHandler(queries *repository.Queries, location *time.Location, logger
 		))
 
 	return &PostHandler{
-		queries:  queries,
-		md:       md,
-		logger:   logger,
-		location: location,
-		auth:     auth,
-		blogName: blogName,
+		queries:   queries,
+		md:        md,
+		logger:    logger,
+		location:  location,
+		auth:      auth,
+		blogName:  blogName,
+		pagetitle: pagetitle,
 	}
 }
 
@@ -90,7 +92,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := templates.MainPage(h.blogName, posts, authenticated)
+	page := templates.MainPage(h.blogName, h.pagetitle, posts, authenticated)
 	page.Render(ctx, w)
 }
 
@@ -192,12 +194,12 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		page := templates.Editor(h.blogName, post.Content, post.Title, post.Slug, true, authenticated)
+		page := templates.Editor(h.blogName, h.pagetitle, post.Content, post.Title, post.Slug, true, authenticated)
 		page.Render(ctx, w)
 		return
 	}
 
-	editor := templates.Editor(h.blogName, "", "", "", false, authenticated)
+	editor := templates.Editor(h.blogName, h.pagetitle, "", "", "", false, authenticated)
 	editor.Render(ctx, w)
 }
 
@@ -265,7 +267,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	page := templates.PostPage(h.blogName, post, authenticated)
+	page := templates.PostPage(h.blogName, h.pagetitle, post, authenticated)
 	page.Render(ctx, w)
 }
 

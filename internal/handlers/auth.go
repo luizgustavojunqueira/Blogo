@@ -10,16 +10,18 @@ import (
 )
 
 type AuthHandler struct {
-	auth     *auth.Auth
-	logger   *log.Logger
-	blogName string
+	auth      *auth.Auth
+	logger    *log.Logger
+	blogName  string
+	pagetitle string
 }
 
-func NewAuthHandler(auth *auth.Auth, logger *log.Logger, blogName string) *AuthHandler {
+func NewAuthHandler(auth *auth.Auth, logger *log.Logger, blogName, pagetitle string) *AuthHandler {
 	return &AuthHandler{
-		auth:     auth,
-		logger:   logger,
-		blogName: blogName,
+		auth:      auth,
+		logger:    logger,
+		blogName:  blogName,
+		pagetitle: pagetitle,
 	}
 }
 
@@ -28,7 +30,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 		ctx := r.Context()
 
-		page := templates.LoginPage(h.blogName)
+		page := templates.LoginPage(h.blogName, h.pagetitle)
 		page.Render(ctx, w)
 
 		return

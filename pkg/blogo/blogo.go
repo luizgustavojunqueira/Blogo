@@ -21,6 +21,7 @@ type User struct {
 
 type Config struct {
 	BlogName string
+	Title    string
 	Port     string
 	DB       *sql.DB // A PostgreSQL connection
 	Auth     *auth.Auth
@@ -78,6 +79,11 @@ func NewBlogo(config *Config) (*Blogo, error) {
 		config.Location = time.Local
 	}
 
+	if config.Title == "" {
+		fmt.Println("Title not provided. Using default title")
+		config.Title = "Blogo"
+	}
+
 	if config.Queries == nil {
 		return nil, errors.New("Queries not provided")
 	}
@@ -92,10 +98,10 @@ func NewBlogo(config *Config) (*Blogo, error) {
 // Start starts the blog server and listens for incoming requests.
 func (blogo *Blogo) Start() error {
 	// TODO: Allow the user to provide a custom handler for the blog posts and if not provided define a default one
-	var postHandler PostHandler = handlers.NewPostHandler(blogo.config.Queries, blogo.config.Location, blogo.config.Logger, blogo.config.Auth, blogo.config.BlogName)
+	var postHandler PostHandler = handlers.NewPostHandler(blogo.config.Queries, blogo.config.Location, blogo.config.Logger, blogo.config.Auth, blogo.config.BlogName, blogo.config.Title)
 
 	// TODO: Allow the user to provide a custom handler for the authentication and if not provided define a default one
-	var authHandler AuthHandler = handlers.NewAuthHandler(blogo.config.Auth, blogo.config.Logger, blogo.config.BlogName)
+	var authHandler AuthHandler = handlers.NewAuthHandler(blogo.config.Auth, blogo.config.Logger, blogo.config.BlogName, blogo.config.Title)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("internal/static"))))
 

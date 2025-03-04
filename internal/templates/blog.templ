@@ -3,7 +3,7 @@ package templates
 import "github.com/luizgustavojunqueira/Blogo/internal/repository"
 import "time"
 
-templ MainPage(blogname string, posts []repository.Post, authenticated bool) {
+templ MainPage(blogname, title string, posts []repository.Post, authenticated bool) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
@@ -12,7 +12,7 @@ templ MainPage(blogname string, posts []repository.Post, authenticated bool) {
 			<link href="/static/styles.css" rel="stylesheet"/>
 			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
-			<title>Blogo</title>
+			<title>{ title }</title>
 		</head>
 		<body class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
 			if authenticated {
@@ -29,7 +29,7 @@ templ MainPage(blogname string, posts []repository.Post, authenticated bool) {
 	</html>
 }
 
-templ Editor(blogname string, content string, title string, slug string, edit bool, authenticated bool) {
+templ Editor(blogname, pagetitle string, content string, title string, slug string, edit bool, authenticated bool) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
@@ -39,7 +39,7 @@ templ Editor(blogname string, content string, title string, slug string, edit bo
 			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
 			<script src="/static/js/htmx-response-targets.js"></script>
-			<title>Blogo</title>
+			<title>{ pagetitle }</title>
 		</head>
 		<body
 			hx-ext="response-targets"
@@ -131,7 +131,7 @@ templ header(title string, linksNames []string, links []string) {
 	</header>
 }
 
-templ PostPage(blogname string, post repository.Post, authenticated bool) {
+templ PostPage(blogname, title string, post repository.Post, authenticated bool) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
@@ -140,7 +140,7 @@ templ PostPage(blogname string, post repository.Post, authenticated bool) {
 			<link href="/static/styles.css" rel="stylesheet"/>
 			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
-			<title>Blogo</title>
+			<title>{ title }</title>
 		</head>
 		<body class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
 			if authenticated {
@@ -156,7 +156,7 @@ templ PostPage(blogname string, post repository.Post, authenticated bool) {
 	</html>
 }
 
-templ LoginPage(blogname string) {
+templ LoginPage(blogname, title string) {
 	<!DOCTYPE html>
 	<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray">
 		<head>
@@ -166,7 +166,7 @@ templ LoginPage(blogname string) {
 			<link rel="icon" href="/static/images/favicon.png"/>
 			<script src="/static/js/htmx.js"></script>
 			<script src="/static/js/htmx-response-targets.js"></script>
-			<title>Blogo</title>
+			<title>{ title }</title>
 		</head>
 		<body class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white">
 			@header(blogname, []string{"Back to Home"}, []string{"/"})

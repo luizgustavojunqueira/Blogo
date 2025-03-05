@@ -2,7 +2,8 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-    --color-lightgray: #363b3c;
+    --color-lightgray: #393b3f;
     --color-darkgray: #222529;
+    --color-midgray: #2f3136;
     --color-verylightgreen: #d5ebdb;
 }

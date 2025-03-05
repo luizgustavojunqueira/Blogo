@@ -231,7 +231,7 @@ func header(title string, linksNames []string, links []string) templ.Component {
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<header class=\"bg-darkgray text-white min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-slate-100 dark:text-black\"><h1 class=\"text-2xl font-bold\"><a href=\"/\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<header class=\"bg-slate-100 text-black min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-darkgray dark:text-white\"><h1 class=\"text-2xl font-bold\"><a href=\"/\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -258,7 +258,7 @@ func header(title string, linksNames []string, links []string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-lightgray dark:hover:bg-midgray dark:text-white transition-colors\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -266,7 +266,7 @@ func header(title string, linksNames []string, links []string) templ.Component {
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(
 				name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 103, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 104, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -313,7 +313,7 @@ func PostPage(blogname, title string, post repository.Post, authenticated bool) 
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 120, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 121, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -379,7 +379,7 @@ func LoginPage(blogname, title string) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 149, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 150, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -393,7 +393,7 @@ func LoginPage(blogname, title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<main class=\"flex flex-col justify-center items-center p-4 pt-10\"><form class=\"flex flex-col justify-center items-center rounded-md p-2 dark:bg-slate-100 bg-darkgray dark:text-darkgray text-slate-100\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"w-full p-3 mt-2 text-lg  bg-slate-100 dark:bg-darkgray rounded-md\n                text-darkgray dark:text-slate-100 hover:bg-slate-600 hover:text-slate-100 hover:cursor-pointer transition-colors\" type=\"submit\" value=\"Login\"></form></main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<main class=\"flex flex-col justify-center items-center p-4 pt-10\"><form class=\"flex flex-col justify-center items-center rounded-xl p-10 bg-slate-200 dark:bg-lightgray dark:text-white text-black\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"w-full p-3 mt-2 text-lg  bg-white dark:bg-darkgray rounded-md\n                text-darkgray dark:text-slate-100 hover:bg-slate-100/95 dark:hover:bg-midgray hover:cursor-pointer transition-colors\" type=\"submit\" value=\"Login\"></form></main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

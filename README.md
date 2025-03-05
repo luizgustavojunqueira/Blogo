@@ -51,3 +51,12 @@ docker compose up database && air
 ## Deploying
 
 For deploying your blog, there is a dockerfile provided.
+
+# Roadmap
+
+- [ ] Add posts descriptions
+- [ ] Add posts tags
+- [ ] Add read time
+- [ ] Search by name and tag
+- [ ] Group posts by year and/or month
+- [ ] Redesign the post editor

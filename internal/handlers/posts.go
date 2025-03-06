@@ -92,7 +92,13 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := templates.MainPage(h.blogName, h.pagetitle, posts, authenticated)
+	mainPage := templates.MainPage(h.blogName, h.pagetitle, posts, authenticated)
+
+	var buf bytes.Buffer
+
+	mainPage.Render(ctx, &buf)
+
+	page := templates.Root(h.blogName, buf.String())
 	page.Render(ctx, w)
 }
 
@@ -159,8 +165,8 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Location", "/")
 
-	page := templates.PostCard(createdPost, authenticated)
-	page.Render(ctx, w)
+	card := templates.PostCard(createdPost, authenticated)
+	card.Render(ctx, w)
 }
 
 func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
@@ -199,8 +205,13 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	editor := templates.Editor(h.blogName, h.pagetitle, "", "", "", false, authenticated)
-	editor.Render(ctx, w)
+	editorPage := templates.Editor(h.blogName, h.pagetitle, "", "", "", false, authenticated)
+
+	var buf bytes.Buffer
+	editorPage.Render(ctx, &buf)
+
+	page := templates.Root(h.blogName, buf.String())
+	page.Render(ctx, w)
 }
 
 func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
@@ -267,7 +278,12 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	page := templates.PostPage(h.blogName, h.pagetitle, post, authenticated)
+	postPage := templates.PostPage(h.blogName, h.pagetitle, post, authenticated)
+
+	var buf bytes.Buffer
+	postPage.Render(ctx, &buf)
+
+	page := templates.Root(h.blogName, buf.String())
 	page.Render(ctx, w)
 }
 

@@ -32,20 +32,20 @@ func MainPage(blogname, title string, posts []repository.Post, authenticated boo
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray font-roboto\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 16, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 15, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title></head><body class=\"min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title></head><body class=\"min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -99,14 +99,14 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><script src=\"/static/js/htmx-response-targets.js\"></script><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray font-roboto\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><script src=\"/static/js/htmx-response-targets.js\"></script><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(pagetitle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 46, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 42, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -139,7 +139,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/post/edit/" + slug)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 64, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 67, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -162,7 +162,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 74, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 88, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -175,7 +175,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(slug)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 77, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 96, Col: 19}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -188,7 +188,7 @@ func Editor(blogname, pagetitle string, content string, title string, slug strin
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(content)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 82, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 107, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -238,7 +238,7 @@ func header(title string, linksNames []string, links []string) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 98, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 125, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -266,7 +266,7 @@ func header(title string, linksNames []string, links []string) templ.Component {
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(
 				name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 104, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 133, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -306,14 +306,14 @@ func PostPage(blogname, title string, post repository.Post, authenticated bool) 
 			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray font-roboto\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 121, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 149, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -372,14 +372,14 @@ func LoginPage(blogname, title string) templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><script src=\"/static/js/htmx-response-targets.js\"></script><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<!doctype html><html lang=\"pt-br\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray font-roboto\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><script src=\"/static/js/htmx-response-targets.js\"></script><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 150, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/blog.templ`, Line: 175, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {

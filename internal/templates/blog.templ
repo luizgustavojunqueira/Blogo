@@ -6,7 +6,7 @@ import "time"
 // The root component that contains the HTML tag
 templ Root(title string, component string) {
 <!DOCTYPE html>
-<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray font-roboto text-lg">
+<html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray font-roboto text-lg text-justify">
 
 <head>
     <meta charset="UTF-8" />
@@ -38,8 +38,6 @@ if authenticated {
 }
 
 templ Editor(blogname, pagetitle string, content string, title string, slug string, edit bool, authenticated bool) {
-class="min-h-full max-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white"
->
 if authenticated {
 @header(blogname, []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
 } else {

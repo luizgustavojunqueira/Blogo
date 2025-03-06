@@ -200,7 +200,12 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		page := templates.Editor(h.blogName, h.pagetitle, post.Content, post.Title, post.Slug, true, authenticated)
+		editorPage := templates.Editor(h.blogName, h.pagetitle, post.Content, post.Title, post.Slug, true, authenticated)
+		var buf bytes.Buffer
+
+		editorPage.Render(ctx, &buf)
+
+		page := templates.Root(h.blogName, buf.String())
 		page.Render(ctx, w)
 		return
 	}

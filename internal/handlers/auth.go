@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"bytes"
 	"log"
 	"net/http"
 	"time"
@@ -33,11 +32,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 		loginPage := templates.LoginPage(h.blogName, h.pagetitle)
 
-		var buf bytes.Buffer
-
-		loginPage.Render(ctx, &buf)
-
-		page := templates.Root(h.blogName, buf.String())
+		page := templates.Root(h.blogName, loginPage)
 		page.Render(ctx, w)
 
 		return

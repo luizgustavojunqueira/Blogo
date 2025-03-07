@@ -4,7 +4,7 @@ import "github.com/luizgustavojunqueira/Blogo/internal/repository"
 import "time"
 
 // The root component that contains the HTML tag
-templ Root(title string, component string) {
+templ Root(title string, component templ.Component) {
 <!DOCTYPE html>
 <html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray font-roboto text-lg text-justify">
 
@@ -18,7 +18,7 @@ templ Root(title string, component string) {
 </head>
 
 <body hx-ext="response-targets" class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white ">
-    @templ.Raw(component)
+    @component
 </body>
 
 </html>

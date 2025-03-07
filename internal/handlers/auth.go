@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/luizgustavojunqueira/Blogo/internal/auth"
-	"github.com/luizgustavojunqueira/Blogo/internal/templates"
+	"github.com/luizgustavojunqueira/Blogo/internal/templates/pages"
 )
 
 type AuthHandler struct {
@@ -30,9 +30,9 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 		ctx := r.Context()
 
-		loginPage := templates.LoginPage(h.blogName, h.pagetitle)
+		loginPage := pages.LoginPage(h.blogName, h.pagetitle)
 
-		page := templates.Root(h.blogName, loginPage)
+		page := pages.Root(h.blogName, loginPage)
 		page.Render(ctx, w)
 
 		return

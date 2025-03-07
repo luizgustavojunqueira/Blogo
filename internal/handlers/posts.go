@@ -10,12 +10,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/luizgustavojunqueira/Blogo/internal/auth"
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
-	"github.com/luizgustavojunqueira/Blogo/internal/templates"
+	"github.com/luizgustavojunqueira/Blogo/internal/templates/components"
+	"github.com/luizgustavojunqueira/Blogo/internal/templates/pages"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
+	"github.com/yuin/goldmark/util"
+	"go.abhg.dev/goldmark/toc"
+
+	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 )
 
 type PostHandler struct {
@@ -29,12 +35,25 @@ type PostHandler struct {
 }
 
 func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger, auth *auth.Auth, blogName, pagetitle string) *PostHandler {
-	md := goldmark.New(goldmark.WithExtensions(extension.GFM),
+	md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.Table, extension.Typographer, highlighting.NewHighlighting(
+		highlighting.WithStyle("dracula"),
+		highlighting.WithFormatOptions(
+			chromahtml.WithLineNumbers(true),
+		),
+	)),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
+			parser.WithAttribute(),
+			parser.WithASTTransformers(
+				// TODO: Personalize the TOC
+				util.Prioritized(&toc.Transformer{
+					Title: "Contents",
+				}, 100),
+			),
 		),
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(),
+			html.WithHardWraps(),
 		))
 
 	return &PostHandler{
@@ -92,9 +111,9 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mainPage := templates.MainPage(h.blogName, h.pagetitle, posts, authenticated)
+	mainPage := pages.MainPage(h.blogName, h.pagetitle, posts, authenticated)
 
-	root := templates.Root(h.blogName, mainPage)
+	root := pages.Root(h.blogName, mainPage)
 
 	root.Render(ctx, w)
 }
@@ -162,7 +181,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Location", "/")
 
-	card := templates.PostCard(createdPost, authenticated)
+	card := components.PostCard(createdPost, authenticated)
 	card.Render(ctx, w)
 }
 
@@ -197,16 +216,16 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		editorPage := templates.Editor(h.blogName, h.pagetitle, post.Content, post.Title, post.Slug, true, authenticated)
+		editorPage := pages.EditorPage(h.blogName, h.pagetitle, post.Content, post.Title, post.Slug, true, authenticated)
 
-		page := templates.Root(h.blogName, editorPage)
+		page := pages.Root(h.blogName, editorPage)
 		page.Render(ctx, w)
 		return
 	}
 
-	editorPage := templates.Editor(h.blogName, h.pagetitle, "", "", "", false, authenticated)
+	editorPage := pages.EditorPage(h.blogName, h.pagetitle, "", "", "", false, authenticated)
 
-	page := templates.Root(h.blogName, editorPage)
+	page := pages.Root(h.blogName, editorPage)
 	page.Render(ctx, w)
 }
 
@@ -249,7 +268,7 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	markdown := templates.Markdown(buf.String(), title, slug, time.Now(), time.Now())
+	markdown := components.Markdown(buf.String(), title, slug, time.Now(), time.Now())
 	markdown.Render(ctx, w)
 }
 
@@ -274,9 +293,9 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	postPage := templates.PostPage(h.blogName, h.pagetitle, post, authenticated)
+	postPage := pages.PostPage(h.blogName, h.pagetitle, post, authenticated)
 
-	page := templates.Root(h.blogName, postPage)
+	page := pages.Root(h.blogName, postPage)
 	page.Render(ctx, w)
 }
 

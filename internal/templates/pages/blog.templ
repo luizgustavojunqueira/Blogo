@@ -1,9 +1,12 @@
-package templates
+package pages
 
-import "github.com/luizgustavojunqueira/Blogo/internal/repository"
-import "time"
+import (
+"github.com/luizgustavojunqueira/Blogo/internal/repository"
+"github.com/luizgustavojunqueira/Blogo/internal/templates/components"
+"time"
+)
 
-// The root component that contains the HTML tag
+// Root component that wraps all content
 templ Root(title string, component templ.Component) {
 <!DOCTYPE html>
 <html lang="pt-br" class="min-h-screen bg-slate-100 dark:bg-darkgray font-roboto text-lg text-justify">
@@ -14,6 +17,7 @@ templ Root(title string, component templ.Component) {
     <link href="/static/styles.css" rel="stylesheet" />
     <link rel="icon" href="/static/images/favicon.png" />
     <script src="/static/js/htmx.js"></script>
+    <script src="/static/js/htmx-response-targets.js"></script>
     <title>{ title }</title>
 </head>
 
@@ -26,22 +30,22 @@ templ Root(title string, component templ.Component) {
 
 templ MainPage(blogname, title string, posts []repository.Post, authenticated bool) {
 if authenticated {
-@header(blogname, []string{"New Post", "Logout"}, []string{"/editor", "/logout"})
+@components.Header(blogname, []string{"New Post", "Logout"}, []string{"/editor", "/logout"})
 } else {
-@header(blogname, []string{"Login"}, []string{"/login"})
+@components.Header(blogname, []string{"Login"}, []string{"/login"})
 }
 <ul id="posts-list" class="min-h-screen flex flex-col items-center">
     for _, post := range posts {
-    @PostCard(post, authenticated)
+    @components.PostCard(post, authenticated)
     }
 </ul>
 }
 
-templ Editor(blogname, pagetitle string, content string, title string, slug string, edit bool, authenticated bool) {
+templ EditorPage(blogname, pagetitle string, content string, title string, slug string, edit bool, authenticated bool) {
 if authenticated {
-@header(blogname, []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
+@components.Header(blogname, []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
 } else {
-@header(blogname, []string{"Back to Home"}, []string{"/"})
+@components.Header(blogname, []string{"Back to Home"}, []string{"/"})
 }
 <main class="grid grid-cols-2 min-h-full max-h-[calc(100vh-var(--spacing)*17)]">
     <form
@@ -74,41 +78,25 @@ if authenticated {
     </form>
     <section id="preview"
         class="flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)] overflow-x-hidden">
-        @Markdown(content, title, slug, time.Now(), time.Now())
+        @components.Markdown(content, title, slug, time.Now(), time.Now())
     </section>
 </main>
 }
 
-templ header(title string, linksNames []string, links []string) {
-<header
-    class="bg-slate-100 text-black min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-darkgray dark:text-white">
-    <h1 class="text-2xl font-bold"><a href="/">{ title }</a></h1>
-    <section>
-        for i, name := range linksNames {
-        <a href={ templ.SafeURL(links[i]) }
-            class="mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-lightgray dark:hover:bg-midgray dark:text-white transition-colors">
-            {
-            name }
-        </a>
-        }
-    </section>
-</header>
-}
-
 templ PostPage(blogname, title string, post repository.Post, authenticated bool) {
 if authenticated {
-@header(blogname, []string{"Back to Home", "Edit", "Logout"}, []string{"/", "/editor/" + post.Slug,
+@components.Header(blogname, []string{"Back to Home", "Edit", "Logout"}, []string{"/", "/editor/" + post.Slug,
 "/logout"})
 } else {
-@header(blogname, []string{"Back to Home"}, []string{"/"})
+@components.Header(blogname, []string{"Back to Home"}, []string{"/"})
 }
 <section class="flex flex-col justify-center items-center p-4 pt-10">
-    @Markdown(post.ParsedContent, post.Title, post.Slug, post.CreatedAt.Time, post.ModifiedAt.Time)
+    @components.Markdown(post.ParsedContent, post.Title, post.Slug, post.CreatedAt.Time, post.ModifiedAt.Time)
 </section>
 }
 
 templ LoginPage(blogname, title string) {
-@header(blogname, []string{"Back to Home"}, []string{"/"})
+@components.Header(blogname, []string{"Back to Home"}, []string{"/"})
 <main class="flex flex-col justify-center items-center p-4 pt-10">
     <form
         class="flex flex-col justify-center items-center rounded-xl p-10 bg-slate-200 dark:bg-lightgray dark:text-white text-black"

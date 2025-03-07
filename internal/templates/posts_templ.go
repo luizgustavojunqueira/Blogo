@@ -129,7 +129,7 @@ func Markdown(content, title, slug string, createdAt, modifiedAt time.Time) temp
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<section class=\"bg-slate-200 dark:bg-lightgray rounded-xl p-10 px-15\"><header class=\"max-w-prose w-full flex flex-col justify-center items-center \"><h1 class=\"p-0 m-0 mb-0 text-5xl/15 font-bold break-all \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<section class=\"bg-slate-100 dark:bg-darkgray text-lg w-full flex flex-col items-center\"><header class=\"max-w-prose w-full flex flex-col justify-center items-center \"><h1 class=\"p-0 m-0 mb-0 text-5xl/15 font-bold break-all \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -168,7 +168,7 @@ func Markdown(content, title, slug string, createdAt, modifiedAt time.Time) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white  flex-wrap\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</p></section></header><section class=\"w-full mt-5 flex flex-col justify-center prose prose-p:m-0 dark:text-white prose-headings:dark:text-white prose-strong:dark:text-white prose-a:dark:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-1xl prose-h4:text-xl prose-h5:text-xl prose-a:decoration-darkgray dark:prose-a:decoration-white flex-wrap max-w-[80ch]\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

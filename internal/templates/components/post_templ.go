@@ -188,7 +188,7 @@ func Markdown(post repository.Post) templ.Component {
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<section class=\"w-full max-w-[min(65ch,100%)] bg-slate-300 dark:bg-midgray text-lg flex rounded-lg flex-col items-center\"><header class=\"p-3 w-full bg-slate-300 dark:bg-midgray flex flex-col rounded-t-lg justify-start items-start \"><h1 class=\"p-0 m-0 mb-0 text-5xl/15 font-bold break-all \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<section class=\"w-full max-w-[min(75ch,100%)] bg-slate-300 dark:bg-midgray text-lg flex rounded-lg flex-col items-center\"><header class=\"p-3 w-full bg-slate-300 dark:bg-midgray flex flex-col rounded-t-lg justify-start items-start \"><h1 class=\"p-0 m-0 mb-0 text-5xl/15 font-bold break-all \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

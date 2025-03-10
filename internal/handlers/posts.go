@@ -17,7 +17,8 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
-	"github.com/yuin/goldmark/util"
+	"github.com/yuin/goldmark/text"
+	_ "github.com/yuin/goldmark/util"
 	"go.abhg.dev/goldmark/toc"
 
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
@@ -44,12 +45,13 @@ func NewPostHandler(queries *repository.Queries, location *time.Location, logger
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
 			parser.WithAttribute(),
-			parser.WithASTTransformers(
-				// TODO: Personalize the TOC
-				util.Prioritized(&toc.Transformer{
-					Title: "Contents",
-				}, 100),
-			),
+			// parser.WithASTTransformers(
+			// util.Prioritized(&toc.Transformer{
+			// 	ListID:  "toc",
+			// 	Compact: true,
+			// 	TitleID: "toc-title",
+			// }, 100),
+			// ),
 		),
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(),
@@ -88,6 +90,26 @@ func validatePost(title, content, slug string) error {
 		return fmt.Errorf("Content must be less than 10000 characters")
 	}
 	return nil
+}
+
+func (h *PostHandler) getPostToc(src []byte) (string, error) {
+	doc := h.md.Parser().Parse(text.NewReader(src))
+
+	tree, err := toc.Inspect(doc, src)
+	if err != nil {
+		return "", err
+	}
+
+	list := toc.RenderList(tree)
+
+	var tocBuf bytes.Buffer
+	if list != nil {
+		if err := h.md.Renderer().Render(&tocBuf, src, list); err != nil {
+			return "", err
+		}
+	}
+
+	return tocBuf.String(), nil
 }
 
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
@@ -163,8 +185,16 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	toc, err := h.getPostToc([]byte(content))
+	if err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	post := repository.CreatePostParams{
 		Title:         title,
+		Toc:           toc,
 		Content:       content,
 		ParsedContent: parsedContent.String(),
 		Slug:          slug,
@@ -216,14 +246,14 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		editorPage := pages.EditorPage(h.blogName, h.pagetitle, post.Content, post.Title, post.Slug, true, authenticated)
+		editorPage := pages.EditorPage(h.blogName, h.pagetitle, post.Content, "", post.Title, post.Slug, true, authenticated)
 
 		page := pages.Root(h.blogName, editorPage)
 		page.Render(ctx, w)
 		return
 	}
 
-	editorPage := pages.EditorPage(h.blogName, h.pagetitle, "", "", "", false, authenticated)
+	editorPage := pages.EditorPage(h.blogName, h.pagetitle, "", "", "", "", false, authenticated)
 
 	page := pages.Root(h.blogName, editorPage)
 	page.Render(ctx, w)
@@ -268,7 +298,14 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	markdown := components.Markdown(buf.String(), title, slug, time.Now(), time.Now())
+	toc, err := h.getPostToc([]byte(content))
+	if err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	markdown := components.Markdown(buf.String(), toc, title, slug, time.Now(), time.Now())
 	markdown.Render(ctx, w)
 }
 
@@ -375,8 +412,16 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	toc, err := h.getPostToc([]byte(newContent))
+	if err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	post := repository.UpdatePostBySlugParams{
 		Title:         newTitle,
+		Toc:           toc,
 		Slug:          newSlug,
 		Slug_2:        slug,
 		Content:       newContent,

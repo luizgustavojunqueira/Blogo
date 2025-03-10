@@ -12,6 +12,7 @@ type Post struct {
 	ID            int64
 	Title         string
 	Content       string
+	Toc           string
 	ParsedContent string
 	Slug          string
 	CreatedAt     pgtype.Timestamp

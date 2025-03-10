@@ -5,8 +5,8 @@ order by created_at desc
 ;
 
 -- name: CreatePost :one
-insert into posts (title, toc, content, parsed_content, slug, created_at, modified_at)
-values ($1, $2, $3, $4, $5, $6, $7)
+insert into posts (title, toc, content, parsed_content, description, slug, created_at, modified_at)
+values ($1, $2, $3, $4, $5, $6, $7, $8)
 returning *
 ;
 
@@ -16,16 +16,14 @@ from posts
 where slug = $1
 ;
 
-
 -- name: DeletePostBySlug :exec
 delete from posts
 where slug = $1
 ;
 
-
 -- name: UpdatePostBySlug :exec
 update posts
-set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6
-where slug = $7
+set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7
+where slug = $8
 ;
 

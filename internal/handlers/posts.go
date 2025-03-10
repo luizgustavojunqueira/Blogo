@@ -18,7 +18,6 @@ import (
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/text"
-	_ "github.com/yuin/goldmark/util"
 	"go.abhg.dev/goldmark/toc"
 
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
@@ -45,13 +44,6 @@ func NewPostHandler(queries *repository.Queries, location *time.Location, logger
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
 			parser.WithAttribute(),
-			// parser.WithASTTransformers(
-			// util.Prioritized(&toc.Transformer{
-			// 	ListID:  "toc",
-			// 	Compact: true,
-			// 	TitleID: "toc-title",
-			// }, 100),
-			// ),
 		),
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(),
@@ -171,6 +163,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	slug := r.FormValue("slug")
+	description := r.FormValue("description")
 
 	if err := validatePost(title, content, slug); err != nil {
 		h.logger.Println(err)
@@ -197,6 +190,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Toc:           toc,
 		Content:       content,
 		ParsedContent: parsedContent.String(),
+		Description:   pgtype.Text{String: description, Valid: true},
 		Slug:          slug,
 		CreatedAt:     pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
@@ -246,14 +240,14 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		editorPage := pages.EditorPage(h.blogName, h.pagetitle, post.Content, "", post.Title, post.Slug, true, authenticated)
+		editorPage := pages.EditorPage(h.blogName, h.pagetitle, post, true, authenticated)
 
 		page := pages.Root(h.blogName, editorPage)
 		page.Render(ctx, w)
 		return
 	}
 
-	editorPage := pages.EditorPage(h.blogName, h.pagetitle, "", "", "", "", false, authenticated)
+	editorPage := pages.EditorPage(h.blogName, h.pagetitle, repository.Post{}, false, authenticated)
 
 	page := pages.Root(h.blogName, editorPage)
 	page.Render(ctx, w)
@@ -305,7 +299,15 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	markdown := components.Markdown(buf.String(), toc, title, slug, time.Now(), time.Now())
+	post := repository.Post{
+		Title:         title,
+		Content:       content,
+		ParsedContent: buf.String(),
+		Toc:           toc,
+		Slug:          slug,
+	}
+
+	markdown := components.Markdown(post)
 	markdown.Render(ctx, w)
 }
 
@@ -398,6 +400,7 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	newTitle := r.FormValue("title")
 	newSlug := r.FormValue("slug")
 	newContent := r.FormValue("content")
+	newDescription := r.FormValue("description")
 
 	if err := validatePost(newTitle, newContent, newSlug); err != nil {
 		h.logger.Println(err)
@@ -424,6 +427,7 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		Toc:           toc,
 		Slug:          newSlug,
 		Slug_2:        slug,
+		Description:   pgtype.Text{String: newDescription, Valid: true},
 		Content:       newContent,
 		ParsedContent: parsedContent.String(),
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},

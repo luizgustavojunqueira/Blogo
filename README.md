@@ -54,7 +54,8 @@ For deploying your blog, there is a dockerfile provided.
 
 # Roadmap
 
-- [ ] Add posts descriptions
+- [x] Auto generate table of contents
+- [x] Add posts descriptions
 - [ ] Add posts tags
 - [ ] Add read time
 - [ ] Search by name and tag

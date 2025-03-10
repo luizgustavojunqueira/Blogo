@@ -1,9 +1,6 @@
 package components
 
-import (
-	"github.com/luizgustavojunqueira/Blogo/internal/repository"
-	"time"
-)
+import "github.com/luizgustavojunqueira/Blogo/internal/repository"
 
 templ PostCard(post repository.Post, authenticated bool) {
 	<li
@@ -11,10 +8,13 @@ templ PostCard(post repository.Post, authenticated bool) {
 	>
 		<a href={ templ.SafeURL("/post/" + post.Slug) }>
 			<section class="flex flex-row justify-between">
-				<h1 class="text-3xl m-3 mb-4 font-bold hover:cursor-pointer">
-					{ 
-                post.Title }
-				</h1>
+				<section>
+					<h1 class="text-3xl m-3 mb-1 font-bold hover:cursor-pointer">
+						{ 
+                    post.Title }
+					</h1>
+					<p class="m-3 my-0 text-sm">{ post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
+				</section>
 				if authenticated {
 					<section class="flex flex-row justify-end items-center w-6/12">
 						<a
@@ -61,10 +61,12 @@ templ PostCard(post repository.Post, authenticated bool) {
 				}
 			</section>
 		</a>
-		<hr class="text-verylightgreen/20 dark:text-black/20"/>
-		<section>
-			<p class="m-3">{ post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
-		</section>
+		if post.Description.Valid && post.Description.String != "" {
+			<hr class="text-verylightgreen/20 dark:text-black/20 my-2"/>
+			<section>
+				<p class="m-3 my-0 text-md">{ post.Description.String }</p>
+			</section>
+		}
 	</li>
 }
 
@@ -79,18 +81,20 @@ templ Toc(content string) {
 	</section>
 }
 
-templ Markdown(content, toc, title, slug string, createdAt, modifiedAt time.Time) {
-	<section class="bg-slate-300 dark:bg-midgray  text-lg flex rounded-lg flex-col items-center">
+templ Markdown(post repository.Post) {
+	<section
+		class="w-full max-w-[min(65ch,100%)] bg-slate-300 dark:bg-midgray text-lg flex rounded-lg flex-col items-center"
+	>
 		<header class="p-3 w-full bg-slate-300 dark:bg-midgray flex flex-col rounded-t-lg justify-start items-start ">
-			<h1 class="p-0 m-0 mb-0 text-5xl/15 font-bold break-all ">{ title }</h1>
+			<h1 class="p-0 m-0 mb-0 text-5xl/15 font-bold break-all ">{ post.Title }</h1>
 			<section class="mt-2 w-full flex flex-col text-sm ">
-				<p class="m-1">Published at { createdAt.Format("Jan 01, 2006, at 15:04") }</p>
-				<p class="m-1">Edited at { modifiedAt.Format("Jan 01, 2006, at 15:04") }</p>
+				<p class="m-1">Published at { post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
+				<p class="m-1">Edited at { post.ModifiedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
 			</section>
 		</header>
 		<section class="prose-container">
-			@Toc(toc)
-			@templ.Raw(content)
+			@Toc(post.Toc)
+			@templ.Raw(post.ParsedContent)
 		</section>
 	</section>
 }

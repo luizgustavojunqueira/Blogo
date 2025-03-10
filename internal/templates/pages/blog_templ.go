@@ -11,7 +11,6 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 	"github.com/luizgustavojunqueira/Blogo/internal/templates/components"
-	"time"
 )
 
 // Root component that wraps all content
@@ -43,7 +42,7 @@ func Root(title string, component templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 22, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 21, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -115,7 +114,7 @@ func MainPage(blogname, title string, posts []repository.Post, authenticated boo
 	})
 }
 
-func EditorPage(blogname, pagetitle, content, title, toc, slug string, edit bool, authenticated bool) templ.Component {
+func EditorPage(blogname, pagetitle string, post repository.Post, edit bool, authenticated bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -157,9 +156,9 @@ func EditorPage(blogname, pagetitle, content, title, toc, slug string, edit bool
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/post/edit/" + slug)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/post/edit/" + post.Slug)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 63, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 62, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -180,9 +179,9 @@ func EditorPage(blogname, pagetitle, content, title, toc, slug string, edit bool
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(title)
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(post.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 84, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 83, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -193,36 +192,49 @@ func EditorPage(blogname, pagetitle, content, title, toc, slug string, edit bool
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(slug)
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(post.Slug)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 92, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 91, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"> <label for=\"content\" class=\"w-full text-lg font-bold\">Content</label></section><textarea class=\"w-full resize-none h-full p-3 border-1 border-darkgray dark:border-slate-100 rounded-md\" name=\"content\" id=\"content\" cols=\"30\" rows=\"10\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"> <label for=\"description\" class=\"w-full text-lg font-bold\">Description</label> <input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md\" type=\"text\" name=\"description\" id=\"description\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(content)
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(post.Description.String)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 103, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 99, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</textarea></form><section id=\"preview\" class=\"flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)] overflow-x-hidden\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <label for=\"content\" class=\"w-full text-lg font-bold\">Content</label></section><textarea class=\"w-full resize-none h-full p-3 border-1 border-darkgray dark:border-slate-100 rounded-md\" name=\"content\" id=\"content\" cols=\"30\" rows=\"10\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Markdown(content, toc, title, slug, time.Now(), time.Now()).Render(ctx, templ_7745c5c3_Buffer)
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(post.Content)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/pages/blog.templ`, Line: 110, Col: 18}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</section></main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</textarea></form><section id=\"preview\" class=\"flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)] overflow-x-hidden\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = components.Markdown(post).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</section></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -246,9 +258,9 @@ func PostPage(blogname, title string, post repository.Post, authenticated bool) 
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var9 == nil {
-			templ_7745c5c3_Var9 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if authenticated {
@@ -263,16 +275,15 @@ func PostPage(blogname, title string, post repository.Post, authenticated bool) 
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<section class=\"flex flex-col justify-center items-center p-4 pt-10\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<section class=\"flex flex-col justify-center items-center p-4 pt-10\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Markdown(post.ParsedContent, post.Toc, post.Title, post.Slug, post.CreatedAt.Time,
-			post.ModifiedAt.Time).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Markdown(post).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -296,16 +307,16 @@ func LoginPage(blogname, title string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = components.Header(blogname, []string{"Back to Home"}, []string{"/"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<main class=\"flex flex-col justify-center items-center p-4 pt-10\"><form class=\"flex flex-col justify-center items-center rounded-xl p-10 bg-slate-200 dark:bg-lightgray dark:text-white text-black\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"w-full p-3 mt-2 text-lg  bg-white dark:bg-darkgray rounded-md\n                text-darkgray dark:text-slate-100 hover:bg-slate-100/95 dark:hover:bg-midgray hover:cursor-pointer transition-colors\" type=\"submit\" value=\"Login\"></form></main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<main class=\"flex flex-col justify-center items-center p-4 pt-10\"><form class=\"flex flex-col justify-center items-center rounded-xl p-10 bg-slate-200 dark:bg-lightgray dark:text-white text-black\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"w-full p-3 mt-2 text-lg  bg-white dark:bg-darkgray rounded-md\n                text-darkgray dark:text-slate-100 hover:bg-slate-100/95 dark:hover:bg-midgray hover:cursor-pointer transition-colors\" type=\"submit\" value=\"Login\"></form></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

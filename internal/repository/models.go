@@ -17,4 +17,5 @@ type Post struct {
 	Slug          string
 	CreatedAt     pgtype.Timestamp
 	ModifiedAt    pgtype.Timestamp
+	Description   pgtype.Text
 }

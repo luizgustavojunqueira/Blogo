@@ -3,7 +3,6 @@ package pages
 import (
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 	"github.com/luizgustavojunqueira/Blogo/internal/templates/components"
-	"time"
 )
 
 // Root component that wraps all content
@@ -40,7 +39,7 @@ templ MainPage(blogname, title string, posts []repository.Post, authenticated bo
 	</ul>
 }
 
-templ EditorPage(blogname, pagetitle, content, title, toc, slug string, edit bool, authenticated bool) {
+templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, authenticated bool) {
 	if authenticated {
 		@components.Header(blogname, []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
 	} else {
@@ -60,7 +59,7 @@ templ EditorPage(blogname, pagetitle, content, title, toc, slug string, edit boo
 						class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer"
 						type="button"
 						value="Save"
-						hx-post={ "/post/edit/" + slug }
+						hx-post={ "/post/edit/" + post.Slug }
 						hx-target-400="#teste"
 						hx-target-401="#teste"
 					/>
@@ -81,7 +80,7 @@ templ EditorPage(blogname, pagetitle, content, title, toc, slug string, edit boo
 					type="text"
 					name="title"
 					id="title"
-					value={ title }
+					value={ post.Title }
 				/>
 				<label for="slug" class="w-full text-lg font-bold">Slug</label>
 				<input
@@ -89,7 +88,15 @@ templ EditorPage(blogname, pagetitle, content, title, toc, slug string, edit boo
 					type="text"
 					name="slug"
 					id="slug"
-					value={ slug }
+					value={ post.Slug }
+				/>
+				<label for="description" class="w-full text-lg font-bold">Description</label>
+				<input
+					class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md"
+					type="text"
+					name="description"
+					id="description"
+					value={ post.Description.String }
 				/>
 				<label for="content" class="w-full text-lg font-bold">Content</label>
 			</section>
@@ -100,14 +107,14 @@ templ EditorPage(blogname, pagetitle, content, title, toc, slug string, edit boo
 				cols="30"
 				rows="10"
 			>
-				{ content }
+				{ post.Content }
 			</textarea>
 		</form>
 		<section
 			id="preview"
 			class="flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)] overflow-x-hidden"
 		>
-			@components.Markdown(content, toc, title, slug, time.Now(), time.Now())
+			@components.Markdown(post)
 		</section>
 	</main>
 }
@@ -120,8 +127,7 @@ templ PostPage(blogname, title string, post repository.Post, authenticated bool)
 		@components.Header(blogname, []string{"Back to Home", "Login"}, []string{"/", "/login"})
 	}
 	<section class="flex flex-col justify-center items-center p-4 pt-10">
-		@components.Markdown(post.ParsedContent, post.Toc, post.Title, post.Slug, post.CreatedAt.Time,
-			post.ModifiedAt.Time)
+		@components.Markdown(post)
 	</section>
 }
 

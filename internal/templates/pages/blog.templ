@@ -126,7 +126,7 @@ templ PostPage(blogname, title string, post repository.Post, authenticated bool)
 	} else {
 		@components.Header(blogname, []string{"Back to Home", "Login"}, []string{"/", "/login"})
 	}
-	<section class="flex flex-col justify-center items-center p-4 pt-10">
+	<section class="flex flex-col justify-center items-center p-0 sm:p-4 pt-10">
 		@components.Markdown(post)
 	</section>
 }

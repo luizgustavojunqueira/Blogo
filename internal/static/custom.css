@@ -12,10 +12,11 @@
 
 @layer components {
     .prose-container {
-        @apply bg-slate-200 dark:bg-[#111C22] p-6 px-8 w-full rounded-xl prose prose-p:my-5 text-black dark:text-white flex-wrap max-w-full;
+        @apply bg-slate-200 dark:bg-[#111C22] p-3 px-3 sm:p-6 sm:px-8 w-full rounded-xl prose prose-p:my-5 text-black dark:text-white flex-wrap max-w-full;
         @apply prose-headings:dark:text-white prose-headings:border-b-1 prose-headings:border-b-1 prose-headings:border-darkgray dark:prose-headings:border-slate-100;
-        @apply prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-xl prose-h5:text-xl;
-        @apply prose-a:decoration-black prose-a:decoration-blue-800 prose-a:text-blue-800 dark:prose-a:text-orange-600 dark:prose-a:decoration-orange-700;
+        @apply prose-h5:text-xl prose-h4:text-xl prose-h3:text-xl prose-h1:text-3xl prose-h2:text-2xl sm:prose-h1:text-3xl sm:prose-h2:text-2xl sm:prose-h3:text-xl sm:prose-h4:text-xl sm:prose-h5:text-xl;
+        @apply prose-a:decoration-black prose-a:decoration-blue-800 prose-a:text-blue-800 dark:prose-a:text-orange-600 dark:prose-a:decoration-orange-700 prose-a:text-lg;
+        @apply prose-p:text-lg;
         @apply prose-lead:text-xl prose-lead:mb-5 dark:prose-lead:text-white/90;
         @apply prose-hr:mt-8 prose-hr:mb-4 prose-hr:border-t-1 prose-hr:border-darkgray;
         @apply prose-blockquote:border-l-4 prose-blockquote:border-darkgray prose-blockquote:pl-4 dark:prose-blockquote:text-white dark:prose-blockquote:border-orange-400;

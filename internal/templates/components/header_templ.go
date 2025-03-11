@@ -29,14 +29,14 @@ func Header(title string, linksNames []string, links []string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"bg-slate-100 text-black min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-darkgray dark:text-white\"><h1 class=\"text-2xl font-bold\"><a href=\"/\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"bg-slate-100 text-black min-w-full pt-2 dark:bg-darkgray dark:text-white flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-between sm:px-3\"><h1 class=\"text-xl font-bold sm:text-2xl p-3\"><a href=\"/\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/header.templ`, Line: 6, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/header.templ`, Line: 7, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -90,14 +90,14 @@ func linkButton(text string, link string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-lightgray dark:hover:bg-midgray dark:text-white transition-colors\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-lightgray dark:hover:bg-midgray dark:text-white transition-colors text-sm sm:text-md\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/header.templ`, Line: 18, Col: 10}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/header.templ`, Line: 21, Col: 8}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {

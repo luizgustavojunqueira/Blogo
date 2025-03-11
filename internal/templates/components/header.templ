@@ -1,20 +1,23 @@
 package components
 
 templ Header(title string, linksNames []string, links []string) {
-<header
-    class="bg-slate-100 text-black min-w-full h-17 flex flex-row justify-between p-5 items-center dark:bg-darkgray dark:text-white">
-    <h1 class="text-2xl font-bold"><a href="/">{ title }</a></h1>
-    <section>
-        for i := range len(linksNames) {
-        @linkButton(linksNames[i], links[i])
-        }
-    </section>
-</header>
+	<header
+		class="bg-slate-100 text-black min-w-full pt-2 dark:bg-darkgray dark:text-white flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-between sm:px-3"
+	>
+		<h1 class="text-xl font-bold sm:text-2xl p-3"><a href="/">{ title }</a></h1>
+		<section>
+			for i := range len(linksNames) {
+				@linkButton(linksNames[i], links[i])
+			}
+		</section>
+	</header>
 }
 
 templ linkButton(text string, link string) {
-<a href={ templ.SafeURL(link) }
-    class="mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-lightgray dark:hover:bg-midgray dark:text-white transition-colors">
-    { text }
-</a>
+	<a
+		href={ templ.SafeURL(link) }
+		class="mx-2 bg-slate-200 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-lightgray dark:hover:bg-midgray dark:text-white transition-colors text-sm sm:text-md"
+	>
+		{ text }
+	</a>
 }

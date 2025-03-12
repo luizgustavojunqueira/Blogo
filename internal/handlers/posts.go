@@ -84,23 +84,19 @@ func validatePost(title, content, slug string) error {
 	return nil
 }
 
-func (h *PostHandler) getPostToc(src []byte) (string, error) {
-	doc := h.md.Parser().Parse(text.NewReader(src))
-
+func getPostToc(md goldmark.Markdown, src []byte) (string, error) {
+	doc := md.Parser().Parse(text.NewReader(src))
 	tree, err := toc.Inspect(doc, src)
 	if err != nil {
 		return "", err
 	}
-
 	list := toc.RenderList(tree)
-
 	var tocBuf bytes.Buffer
 	if list != nil {
-		if err := h.md.Renderer().Render(&tocBuf, src, list); err != nil {
+		if err := md.Renderer().Render(&tocBuf, src, list); err != nil {
 			return "", err
 		}
 	}
-
 	return tocBuf.String(), nil
 }
 
@@ -178,7 +174,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	toc, err := h.getPostToc([]byte(content))
+	toc, err := getPostToc(h.md, []byte(content))
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -292,7 +288,7 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	toc, err := h.getPostToc([]byte(content))
+	toc, err := getPostToc(h.md, []byte(content))
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -415,7 +411,7 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	toc, err := h.getPostToc([]byte(newContent))
+	toc, err := getPostToc(h.md, []byte(newContent))
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

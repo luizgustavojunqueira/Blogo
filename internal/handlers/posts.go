@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/luizgustavojunqueira/Blogo/internal/auth"
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 	"github.com/luizgustavojunqueira/Blogo/internal/templates/components"
 	"github.com/luizgustavojunqueira/Blogo/internal/templates/pages"
@@ -25,16 +25,29 @@ import (
 )
 
 type PostHandler struct {
-	queries   *repository.Queries
-	md        goldmark.Markdown
-	location  *time.Location
-	logger    *log.Logger
-	auth      *auth.Auth
-	blogName  string
-	pagetitle string
+	repository PostRepository
+	md         goldmark.Markdown
+	location   *time.Location
+	logger     *log.Logger
+	auth       Auth
+	blogName   string
+	pagetitle  string
 }
 
-func NewPostHandler(queries *repository.Queries, location *time.Location, logger *log.Logger, auth *auth.Auth, blogName, pagetitle string) *PostHandler {
+type PostRepository interface {
+	GetPosts(ctx context.Context) ([]repository.Post, error)
+	CreatePost(ctx context.Context, arg repository.CreatePostParams) (repository.Post, error)
+	GetPostBySlug(ctx context.Context, slug string) (repository.Post, error)
+	DeletePostBySlug(ctx context.Context, slug string) error
+	UpdatePostBySlug(ctx context.Context, arg repository.UpdatePostBySlugParams) error
+}
+
+type Auth interface {
+	ValidateToken(token string) (bool, error)
+	GetCookieName() string
+}
+
+func NewPostHandler(repo PostRepository, location *time.Location, logger *log.Logger, auth Auth, blogName, pagetitle string) *PostHandler {
 	md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.Table, extension.Typographer, highlighting.NewHighlighting(
 		highlighting.WithStyle("dracula"),
 		highlighting.WithFormatOptions(
@@ -51,13 +64,13 @@ func NewPostHandler(queries *repository.Queries, location *time.Location, logger
 		))
 
 	return &PostHandler{
-		queries:   queries,
-		md:        md,
-		logger:    logger,
-		location:  location,
-		auth:      auth,
-		blogName:  blogName,
-		pagetitle: pagetitle,
+		repository: repo,
+		md:         md,
+		logger:     logger,
+		location:   location,
+		auth:       auth,
+		blogName:   blogName,
+		pagetitle:  pagetitle,
 	}
 }
 
@@ -114,7 +127,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	posts, err := h.queries.GetPosts(ctx)
+	posts, err := h.repository.GetPosts(ctx)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -192,7 +205,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 	}
 
-	createdPost, err := h.queries.CreatePost(ctx, post)
+	createdPost, err := h.repository.CreatePost(ctx, post)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -229,7 +242,7 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if slug != "" {
-		post, err := h.queries.GetPostBySlug(ctx, slug)
+		post, err := h.repository.GetPostBySlug(ctx, slug)
 		if err != nil {
 			h.logger.Println(err)
 			http.Error(w, fmt.Sprintf("Post not found: %s", err.Error()), http.StatusNotFound)
@@ -312,7 +325,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	post, err := h.queries.GetPostBySlug(ctx, slug)
+	post, err := h.repository.GetPostBySlug(ctx, slug)
 	if err != nil {
 		h.logger.Println(err)
 	}
@@ -357,7 +370,7 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	err = h.queries.DeletePostBySlug(ctx, slug)
+	err = h.repository.DeletePostBySlug(ctx, slug)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -429,7 +442,7 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 	}
 
-	err = h.queries.UpdatePostBySlug(ctx, post)
+	err = h.repository.UpdatePostBySlug(ctx, post)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -11,11 +11,11 @@ import (
 )
 
 type Auth struct {
-	Username      string
-	Password      string
-	SecretKey     string
-	TokenValidity int64
-	CookieName    string
+	username      string
+	password      string
+	secretKey     string
+	tokenValidity int64
+	cookieName    string
 }
 
 type AuthConfig struct {
@@ -66,17 +66,17 @@ func NewAuth(config AuthConfig) (*Auth, error) {
 	}
 
 	return &Auth{
-		Username:      config.Username,
-		Password:      config.Password,
-		SecretKey:     config.SecretKey,
-		TokenValidity: config.TokenValidity,
-		CookieName:    config.CookieName,
+		username:      config.Username,
+		password:      config.Password,
+		secretKey:     config.SecretKey,
+		tokenValidity: config.TokenValidity,
+		cookieName:    config.CookieName,
 	}, nil
 }
 
 func (auth *Auth) GenerateToken(username string, expiry int64) string {
 	data := fmt.Sprintf("%s:%d", username, expiry)
-	h := hmac.New(sha256.New, []byte(auth.SecretKey))
+	h := hmac.New(sha256.New, []byte(auth.secretKey))
 	h.Write([]byte(data))
 	signature := hex.EncodeToString(h.Sum(nil))
 	token := fmt.Sprintf("%s:%s", data, signature)
@@ -106,7 +106,7 @@ func (auth *Auth) ValidateToken(token string) (bool, error) {
 
 	// Recalcula a assinatura esperada
 	data := fmt.Sprintf("%s:%s", username, expiryStr)
-	h := hmac.New(sha256.New, []byte(auth.SecretKey))
+	h := hmac.New(sha256.New, []byte(auth.secretKey))
 	h.Write([]byte(data))
 	expectedSignature := hex.EncodeToString(h.Sum(nil))
 
@@ -115,4 +115,16 @@ func (auth *Auth) ValidateToken(token string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (auth *Auth) ValidateCredentials(username, password string) bool {
+	return username == auth.username && password == auth.password
+}
+
+func (auth *Auth) GetCookieName() string {
+	return auth.cookieName
+}
+
+func (auth *Auth) GetTokenValidity() int64 {
+	return auth.tokenValidity
 }

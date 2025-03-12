@@ -103,7 +103,7 @@ func getPostToc(md goldmark.Markdown, src []byte) (string, error) {
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	cookie, err := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.GetCookieName())
 
 	authenticated := false
 
@@ -129,7 +129,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.GetCookieName())
 
 	authenticated := false
 
@@ -210,7 +210,7 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	cookie, err := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.GetCookieName())
 
 	authenticated := false
 
@@ -250,7 +250,7 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.GetCookieName())
 
 	authenticated := false
 
@@ -317,7 +317,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		h.logger.Println(err)
 	}
 
-	cookie, err := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.GetCookieName())
 
 	authenticated := false
 
@@ -335,7 +335,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.GetCookieName())
 
 	authenticated := false
 
@@ -371,7 +371,7 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.CookieName)
+	cookie, err := r.Cookie(h.auth.GetCookieName())
 
 	authenticated := false
 

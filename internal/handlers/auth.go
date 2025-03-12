@@ -47,17 +47,17 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	if username != h.auth.Username || password != h.auth.Password {
+	if h.auth.ValidateCredentials(username, password) == false {
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
 
-	expiry := time.Now().Unix() + h.auth.TokenValidity
+	expiry := time.Now().Unix() + h.auth.GetTokenValidity()
 
 	token := h.auth.GenerateToken(username, expiry)
 
 	cookie := http.Cookie{
-		Name:     h.auth.CookieName,
+		Name:     h.auth.GetCookieName(),
 		Value:    token,
 		Expires:  time.Unix(expiry, 0),
 		HttpOnly: true,

@@ -19,19 +19,27 @@ type User struct {
 	Password string
 }
 
-type Config struct {
-	BlogName string
-	Title    string
-	Port     string
-	DB       *sql.DB // A PostgreSQL connection
-	Auth     *auth.Auth
-	Logger   *log.Logger
-	Location *time.Location
-	Queries  *repository.Queries
+type BlogoConfig struct {
+	BlogName   string
+	Title      string
+	Port       string
+	DB         *sql.DB // A PostgreSQL connection
+	auth       *auth.Auth
+	AuthConfig *auth.AuthConfig
+	Logger     *log.Logger
+	Location   *time.Location
+	Queries    *repository.Queries
 }
 
 type Blogo struct {
-	config *Config
+	blogName string
+	title    string
+	port     string
+	db       *sql.DB
+	auth     *auth.Auth
+	logger   *log.Logger
+	location *time.Location
+	queries  *repository.Queries
 }
 
 type PostHandler interface {
@@ -52,13 +60,18 @@ type AuthHandler interface {
 // NewBlogo creates and initializes a new instance of Blogo from the provided configuration.
 // It validates the essential dependencies and returns an error if any are missing.
 // Note: The database connection must be a PostgreSQL connection.
-func NewBlogo(config *Config) (*Blogo, error) {
+func NewBlogo(config *BlogoConfig) (*Blogo, error) {
 	if config.DB == nil {
 		return nil, errors.New("A database connection is required")
 	}
 
-	if config.Auth == nil {
+	if config.AuthConfig == nil {
 		return nil, errors.New("Auth configuration is required")
+	}
+
+	auth, err := auth.NewAuth(*config.AuthConfig)
+	if err != nil {
+		return nil, err
 	}
 
 	if config.BlogName == "" {
@@ -89,7 +102,14 @@ func NewBlogo(config *Config) (*Blogo, error) {
 	}
 
 	blog := &Blogo{
-		config: config,
+		blogName: config.BlogName,
+		title:    config.Title,
+		port:     config.Port,
+		db:       config.DB,
+		auth:     auth,
+		logger:   config.Logger,
+		location: config.Location,
+		queries:  config.Queries,
 	}
 
 	return blog, nil
@@ -97,9 +117,9 @@ func NewBlogo(config *Config) (*Blogo, error) {
 
 // Start starts the blog server and listens for incoming requests.
 func (blogo *Blogo) Start() error {
-	var postHandler PostHandler = handlers.NewPostHandler(blogo.config.Queries, blogo.config.Location, blogo.config.Logger, blogo.config.Auth, blogo.config.BlogName, blogo.config.Title)
+	var postHandler PostHandler = handlers.NewPostHandler(blogo.queries, blogo.location, blogo.logger, blogo.auth, blogo.blogName, blogo.title)
 
-	var authHandler AuthHandler = handlers.NewAuthHandler(blogo.config.Auth, blogo.config.Logger, blogo.config.BlogName, blogo.config.Title)
+	var authHandler AuthHandler = handlers.NewAuthHandler(blogo.auth, blogo.logger, blogo.blogName, blogo.title)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("internal/static"))))
 
@@ -115,11 +135,11 @@ func (blogo *Blogo) Start() error {
 	http.HandleFunc("/login", authHandler.Login)
 	http.HandleFunc("/logout", authHandler.Logout)
 
-	blogo.config.Logger.Printf("Starting server on port %s\n", blogo.config.Port)
+	blogo.logger.Printf("Starting server on port %s\n", blogo.port)
 
-	err := http.ListenAndServe(":"+blogo.config.Port, nil)
+	err := http.ListenAndServe(":"+blogo.port, nil)
 	if err != nil {
-		blogo.config.Logger.Printf("Error starting server: %v\n", err)
+		blogo.logger.Printf("Error starting server: %v\n", err)
 		return err
 	}
 

@@ -59,12 +59,12 @@ func main() {
 		log.Panic(err)
 	}
 
-	blog, err := blogo.NewBlogo(&blogo.Config{
+	blog, err := blogo.NewBlogo(&blogo.BlogoConfig{
 		BlogName: "Luiz Gustavo Junqueira",
 		Title:    "Luiz Gustavo",
 		Port:     os.Getenv("SERVER_PORT"),
 		DB:       db,
-		Auth: &auth.Auth{
+		AuthConfig: &auth.AuthConfig{
 			Username:      os.Getenv("USERNAME"),
 			Password:      os.Getenv("PASSWORD"),
 			SecretKey:     os.Getenv("SECRET_KEY"),

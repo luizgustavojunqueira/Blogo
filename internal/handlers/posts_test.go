@@ -14,7 +14,7 @@ import (
 
 const charset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789"
 
-func RandomString(n int) (string, error) {
+func randomString(n int) (string, error) {
 	b := make([]byte, n)
 	_, err := rand.Read(b)
 	if err != nil {
@@ -28,7 +28,7 @@ func RandomString(n int) (string, error) {
 }
 
 func Test_validatePost(t *testing.T) {
-	longContent, err := RandomString(10001)
+	longContent, err := randomString(10001)
 	if err != nil {
 		t.Errorf("Error generating random string: %v", err)
 	}

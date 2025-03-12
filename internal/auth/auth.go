@@ -18,49 +18,59 @@ type Auth struct {
 	CookieName    string
 }
 
-func NewAuth(username, password, secretKey, cookieName string, tokenValidity int64) (*Auth, error) {
-	if username == "" || password == "" || secretKey == "" || cookieName == "" || tokenValidity == 0 {
+type AuthConfig struct {
+	Username      string // Username for authentication, at least 4 characters
+	Password      string // Password for authentication, at least 8 characters
+	SecretKey     string // Secret key for token generation, at least 32 characters
+	TokenValidity int64  // Token validity in seconds, at least 60 seconds
+	CookieName    string // Name of the cookie, at least 8 characters
+}
+
+// NewAuth creates a new Auth instance from the provided configuration.
+// It returns an error if the configuration is invalid.
+func NewAuth(config AuthConfig) (*Auth, error) {
+	if config.Username == "" || config.Password == "" || config.SecretKey == "" || config.CookieName == "" || config.TokenValidity == 0 {
 		return nil, fmt.Errorf("Invalid parameters")
 	}
 
-	if tokenValidity < 60 {
+	if config.TokenValidity < 60 {
 		return nil, fmt.Errorf("Token validity must be at least 60 seconds")
 	}
 
-	if len(secretKey) < 32 {
+	if len(config.SecretKey) < 32 {
 		return nil, fmt.Errorf("Secret key must be at least 32 characters")
 	}
 
-	if len(cookieName) < 8 {
+	if len(config.CookieName) < 8 {
 		return nil, fmt.Errorf("Cookie name must be at least 8 characters")
 	}
 
-	if strings.Contains(cookieName, ":") {
+	if strings.Contains(config.CookieName, ":") {
 		return nil, fmt.Errorf("Cookie name cannot contain ':'")
 	}
 
-	if strings.Contains(username, ":") {
+	if strings.Contains(config.Username, ":") {
 		return nil, fmt.Errorf("Username cannot contain ':'")
 	}
 
-	if username == password {
+	if config.Username == config.Password {
 		return nil, fmt.Errorf("Username and password must be different")
 	}
 
-	if len(password) < 8 {
+	if len(config.Password) < 8 {
 		return nil, fmt.Errorf("Password must be at least 8 characters")
 	}
 
-	if len(username) < 4 {
+	if len(config.Username) < 4 {
 		return nil, fmt.Errorf("Username must be at least 4 characters")
 	}
 
 	return &Auth{
-		Username:      username,
-		Password:      password,
-		SecretKey:     secretKey,
-		CookieName:    cookieName,
-		TokenValidity: tokenValidity,
+		Username:      config.Username,
+		Password:      config.Password,
+		SecretKey:     config.SecretKey,
+		TokenValidity: config.TokenValidity,
+		CookieName:    config.CookieName,
 	}, nil
 }
 

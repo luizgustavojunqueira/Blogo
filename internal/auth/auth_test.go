@@ -8,27 +8,20 @@ import (
 )
 
 func TestNewAuth(t *testing.T) {
-	type args struct {
-		username      string
-		password      string
-		secretKey     string
-		cookieName    string
-		tokenValidity int64
-	}
 	tests := []struct {
 		name    string
-		args    args
+		args    AuthConfig
 		want    *Auth
 		wantErr bool
 	}{
 		{
 			name: "Test case 1",
-			args: args{
-				username:      "test",
-				password:      "testtest",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "testcookie",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "test",
+				Password:      "testtest",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "testcookie",
+				TokenValidity: 60,
 			},
 			want: &Auth{
 				Username:      "test",
@@ -41,12 +34,12 @@ func TestNewAuth(t *testing.T) {
 		},
 		{
 			name: "Test case 2",
-			args: args{
-				username:      "test",
-				password:      "testtest",
-				secretKey:     "thisisaverysmallsecretkey",
-				cookieName:    "testcookie",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "test",
+				Password:      "testtest",
+				SecretKey:     "thisisaverysmallsecretkey",
+				CookieName:    "testcookie",
+				TokenValidity: 60,
 			},
 			want:    nil,
 			wantErr: true,
@@ -54,84 +47,84 @@ func TestNewAuth(t *testing.T) {
 
 		{
 			name: "Test case 3",
-			args: args{
-				username:      "123",
-				password:      "testtest",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "testcookie",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "123",
+				Password:      "testtest",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "testcookie",
+				TokenValidity: 60,
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name: "Test case 4",
-			args: args{
-				username:      "teset",
-				password:      "test",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "testcookie",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "teset",
+				Password:      "test",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "testcookie",
+				TokenValidity: 60,
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name: "Test case 5",
-			args: args{
-				username:      "teset",
-				password:      "testtest",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "testcookie",
-				tokenValidity: 10,
+			args: AuthConfig{
+				Username:      "teset",
+				Password:      "testtest",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "testcookie",
+				TokenValidity: 10,
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name: "Test case 6",
-			args: args{
-				username:      "teset",
-				password:      "testtest",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "test",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "teset",
+				Password:      "testtest",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "test",
+				TokenValidity: 60,
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name: "Test case 7",
-			args: args{
-				username:      "teset",
-				password:      "testtest",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "test:cookie",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "teset",
+				Password:      "testtest",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "test:cookie",
+				TokenValidity: 60,
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name: "Test case 8",
-			args: args{
-				username:      "tese:t",
-				password:      "testtest",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "testcookie",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "tese:t",
+				Password:      "testtest",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "testcookie",
+				TokenValidity: 60,
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name: "Test case 9",
-			args: args{
-				username:      "testtest",
-				password:      "testtest",
-				secretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
-				cookieName:    "testcookie",
-				tokenValidity: 60,
+			args: AuthConfig{
+				Username:      "testtest",
+				Password:      "testtest",
+				SecretKey:     "thisisaverylongsecretkeythatisatleast32characterslong",
+				CookieName:    "testcookie",
+				TokenValidity: 60,
 			},
 			want:    nil,
 			wantErr: true,
@@ -139,7 +132,7 @@ func TestNewAuth(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewAuth(tt.args.username, tt.args.password, tt.args.secretKey, tt.args.cookieName, tt.args.tokenValidity)
+			got, err := NewAuth(tt.args)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewAuth() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -191,13 +184,13 @@ func TestAuth_GenerateAndValidateToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &Auth{
+			a, _ := NewAuth(AuthConfig{
 				Username:      tt.fields.Username,
 				Password:      tt.fields.Password,
 				SecretKey:     tt.fields.SecretKey,
 				TokenValidity: tt.fields.TokenValidity,
 				CookieName:    tt.fields.CookieName,
-			}
+			})
 
 			token := a.GenerateToken(tt.fields.Username, time.Now().Unix()+tt.fields.TokenValidity)
 

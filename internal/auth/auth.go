@@ -18,14 +18,50 @@ type Auth struct {
 	CookieName    string
 }
 
-func NewAuth(username, password, secretKey, cookieName string, tokenValidity int64) *Auth {
+func NewAuth(username, password, secretKey, cookieName string, tokenValidity int64) (*Auth, error) {
+	if username == "" || password == "" || secretKey == "" || cookieName == "" || tokenValidity == 0 {
+		return nil, fmt.Errorf("Invalid parameters")
+	}
+
+	if tokenValidity < 60 {
+		return nil, fmt.Errorf("Token validity must be at least 60 seconds")
+	}
+
+	if len(secretKey) < 32 {
+		return nil, fmt.Errorf("Secret key must be at least 32 characters")
+	}
+
+	if len(cookieName) < 8 {
+		return nil, fmt.Errorf("Cookie name must be at least 8 characters")
+	}
+
+	if strings.Contains(cookieName, ":") {
+		return nil, fmt.Errorf("Cookie name cannot contain ':'")
+	}
+
+	if strings.Contains(username, ":") {
+		return nil, fmt.Errorf("Username cannot contain ':'")
+	}
+
+	if username == password {
+		return nil, fmt.Errorf("Username and password must be different")
+	}
+
+	if len(password) < 8 {
+		return nil, fmt.Errorf("Password must be at least 8 characters")
+	}
+
+	if len(username) < 4 {
+		return nil, fmt.Errorf("Username must be at least 4 characters")
+	}
+
 	return &Auth{
 		Username:      username,
 		Password:      password,
 		SecretKey:     secretKey,
 		CookieName:    cookieName,
 		TokenValidity: tokenValidity,
-	}
+	}, nil
 }
 
 func (auth *Auth) GenerateToken(username string, expiry int64) string {

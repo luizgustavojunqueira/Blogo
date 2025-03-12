@@ -1,6 +1,6 @@
 APP_NAME=blog
 
-.PHONY: all build run dev clean
+.PHONY: all build run dev test clean
 
 build:
 	@echo "Building..."
@@ -13,6 +13,10 @@ run: build
 dev:
 	@echo "Running in dev mode..."
 	air
+
+test:
+	@echo "Running tests..."
+	go test ./...
 
 clean:
 	@echo "Cleaning..."

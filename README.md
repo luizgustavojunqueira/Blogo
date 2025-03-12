@@ -56,6 +56,7 @@ For deploying your blog, there is a dockerfile provided.
 
 - [x] Auto generate table of contents
 - [x] Add posts descriptions
+- [ ] Tests
 - [ ] Add posts tags
 - [ ] Add read time
 - [ ] Search by name and tag

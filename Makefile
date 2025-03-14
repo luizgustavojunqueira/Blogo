@@ -22,6 +22,10 @@ test:
 	@echo "Running tests..."
 	go test ./...
 
+testv:
+	@echo "Running tests with verbose..."
+	go test -v ./...
+
 clean:
 	@echo "Cleaning..."
 	rm -rf bin/*

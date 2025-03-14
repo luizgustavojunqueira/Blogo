@@ -328,6 +328,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 	post, err := h.repository.GetPostBySlug(ctx, slug)
 	if err != nil {
 		h.logger.Println(err)
+		return
 	}
 
 	cookie, err := r.Cookie(h.auth.GetCookieName())

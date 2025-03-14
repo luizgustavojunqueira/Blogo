@@ -2,13 +2,26 @@ package components
 
 templ Header(title string, linksNames []string, links []string) {
 	<header
-		class="bg-slate-100 text-black min-w-full pt-2 dark:bg-darkgray dark:text-white flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-between sm:px-3"
+		class="bg-slate-100 text-black w-full pt-2 dark:bg-darkgray dark:text-white flex flex-row justify-center items-center px-3"
 	>
-		<h1 class="text-xl font-bold sm:text-2xl p-3"><a href="/">{ title }</a></h1>
-		<section>
-			for i := range len(linksNames) {
-				@linkButton(linksNames[i], links[i])
-			}
+		<section class="w-full max-w-[min(80ch,100%)] flex flex-col items-center md:grid md:grid-cols-[40%_60%]">
+			<h1 class="text-xl font-bold sm:text-2xl p-3"><a href="/">{ title }</a></h1>
+			<section class="flex flex-row md:justify-between">
+				<nav class="md:w-9/12 flex flex-row justify-center md:justify-end items-center">
+					for i := range len(linksNames) {
+						@linkButton(linksNames[i], links[i])
+					}
+				</nav>
+				<section class="md:w-3/12 flex flex-col justify-center items-center md:items-end">
+					<button
+						class="mx-2 bg-slate-200 p-2 rounded-sm w-8 h-9 hover:bg-slate-300 text-darkgray dark:bg-lightgray dark:hover:bg-midgray dark:text-white transition-colors text-sm sm:text-md"
+						@click="darkMode = !darkMode"
+					>
+						<img x-show="!darkMode" src="/static/images/moon.svg" alt="Dark Mode" class="w-4 h-4"/>
+						<img x-show="darkMode" src="/static/images/sun.svg" alt="Dark Mode" class="w-4 h-4"/>
+					</button>
+				</section>
+			</section>
 		</section>
 	</header>
 }

@@ -4,7 +4,7 @@ import "github.com/luizgustavojunqueira/Blogo/internal/repository"
 
 templ PostCard(post repository.Post, authenticated bool) {
 	<li
-		class="bg-slate-200/85 hover:bg-slate-200 text-black flex flex-col justify-center w-11/12 sm:w-8/12 m-5 p-3 rounded-md shadow-slate-400 shadow-md hover:scale-102 transition-all hover:shadow-xl dark:shadow-black dark:bg-lightgray dark:text-white dark:hover:bg-lightgray "
+		class="bg-slate-200/85 hover:bg-slate-200 text-black flex flex-col justify-center w-11/12 lg:w-full lg:max-w-[min(80ch,100%)] m-5 p-3 rounded-md shadow-slate-400 shadow-md hover:scale-102 transition-all hover:shadow-xl dark:shadow-black dark:bg-lightgray dark:text-white dark:hover:bg-lightgray "
 	>
 		<a href={ templ.SafeURL("/post/" + post.Slug) }>
 			<section class="flex flex-row justify-between">

@@ -31,7 +31,7 @@ func PostCard(post repository.Post, authenticated bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<li class=\"bg-slate-200/85 hover:bg-slate-200 text-black flex flex-col justify-center w-11/12 sm:w-8/12 m-5 p-3 rounded-md shadow-slate-400 shadow-md hover:scale-102 transition-all hover:shadow-xl dark:shadow-black dark:bg-lightgray dark:text-white dark:hover:bg-lightgray \"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<li class=\"bg-slate-200/85 hover:bg-slate-200 text-black flex flex-col justify-center w-11/12 lg:w-full lg:max-w-[min(80ch,100%)] m-5 p-3 rounded-md shadow-slate-400 shadow-md hover:scale-102 transition-all hover:shadow-xl dark:shadow-black dark:bg-lightgray dark:text-white dark:hover:bg-lightgray \"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

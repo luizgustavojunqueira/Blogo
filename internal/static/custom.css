@@ -2,6 +2,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     --color-lightgray: #393b3f;
     --color-darkgray: #222529;

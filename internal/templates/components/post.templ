@@ -3,103 +3,89 @@ package components
 import "github.com/luizgustavojunqueira/Blogo/internal/repository"
 
 templ PostCard(post repository.Post, authenticated bool) {
-	<li
-		class="bg-slate-200/85 hover:bg-slate-200 text-black flex flex-col justify-center w-11/12 lg:w-full lg:max-w-[min(80ch,100%)] m-5 p-3 rounded-md shadow-slate-400 shadow-md hover:scale-102 transition-all hover:shadow-xl dark:shadow-black dark:bg-lightgray dark:text-white dark:hover:bg-lightgray "
-	>
-		<a href={ templ.SafeURL("/post/" + post.Slug) }>
-			<section class="flex flex-row justify-between">
-				<section>
-					<h1 class="text-2xl sm:text-3xl m-1 sm:m-3 sm:mb-1 font-bold hover:cursor-pointer">
-						{ 
+<li
+    class="bg-slate-200/85 hover:bg-slate-200 text-black flex flex-col justify-center w-11/12 lg:w-full lg:max-w-[min(80ch,100%)] m-5 p-3 rounded-md shadow-slate-400 shadow-md hover:scale-102 transition-all hover:shadow-xl dark:shadow-black dark:bg-lightgray dark:text-white dark:hover:bg-lightgray ">
+    <a href={ templ.SafeURL("/post/" + post.Slug) }>
+        <section class="flex flex-row justify-between">
+            <section>
+                <h1 class="text-2xl sm:text-3xl m-1 sm:m-3 sm:mb-1 font-bold hover:cursor-pointer">
+                    {
                     post.Title }
-					</h1>
-					<p class="m-1 sm:m-3 sm:my-0 text-[0.75rem] sm:text-md">
-						{ post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }
-					</p>
-				</section>
-				if authenticated {
-					<section class="flex flex-row justify-end items-center w-6/12">
-						<a
-							class="mx-2 bg-slate-100 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-darkgray dark:hover:bg-midgray dark:text-white transition-colors"
-							href={ templ.SafeURL("/editor/" + post.Slug) }
-						>
-							<svg
-								class="fill-black hover:cursor-pointer dark:fill-white"
-								height="24px"
-								width="24px"
-								version="1.1"
-								id="Capa_1"
-								viewBox="0 0 306.637 306.637"
-							>
-								<g>
-									<g>
-										<path
-											d="M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z"
-										></path>
-										<path
-											d="M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z"
-										></path>
-									</g>
-								</g>
-							</svg>
-						</a>
-						<button
-							hx-delete={ "/post/delete/" + post.Slug }
-							hx-confirm="Are you sure you wish to delete this post?"
-							class="mx-2 bg-slate-100 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-darkgray dark:hover:bg-midgray dark:text-white transition-colors hover:cursor-pointer"
-						>
-							<svg class="fill-red-600 " version="1.1" width="24px" height="24px" viewBox="0 0 485 485">
-								<g>
-									<g>
-										<rect x="67.224" width="350.535" height="71.81"></rect>
-										<path
-											d="M417.776,92.829H67.237V485h350.537V92.829H417.776z M165.402,431.447h-28.362V146.383h28.362V431.447z M256.689,431.447    h-28.363V146.383h28.363V431.447z M347.97,431.447h-28.361V146.383h28.361V431.447z"
-										></path>
-									</g>
-								</g>
-							</svg>
-						</button>
-					</section>
-				}
-			</section>
-		</a>
-		if post.Description.Valid && post.Description.String != "" {
-			<hr class="text-verylightgreen/20 dark:text-black/20 my-2"/>
-			<section>
-				<p class="m-3 my-0 text-sm sm:text-lg">{ post.Description.String }</p>
-			</section>
-		}
-	</li>
+                </h1>
+                <p class="m-1 sm:m-3 sm:my-0 text-[0.75rem] sm:text-md">
+                    { post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }
+                </p>
+            </section>
+            if authenticated {
+            <section class="flex flex-row justify-end items-center w-6/12">
+                <a class="mx-2 bg-slate-100 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-darkgray dark:hover:bg-midgray dark:text-white transition-colors"
+                    href={ templ.SafeURL("/editor/" + post.Slug) }>
+                    <svg class="fill-black hover:cursor-pointer dark:fill-white" height="24px" width="24px"
+                        version="1.1" id="Capa_1" viewBox="0 0 306.637 306.637">
+                        <g>
+                            <g>
+                                <path
+                                    d="M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z">
+                                </path>
+                                <path
+                                    d="M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z">
+                                </path>
+                            </g>
+                        </g>
+                    </svg>
+                </a>
+                <button hx-delete={ "/post/delete/" + post.Slug }
+                    hx-confirm="Are you sure you wish to delete this post?"
+                    class="mx-2 bg-slate-100 p-2 rounded-sm hover:bg-slate-300 text-darkgray dark:bg-darkgray dark:hover:bg-midgray dark:text-white transition-colors hover:cursor-pointer">
+                    <svg class="fill-red-600 " version="1.1" width="24px" height="24px" viewBox="0 0 485 485">
+                        <g>
+                            <g>
+                                <rect x="67.224" width="350.535" height="71.81"></rect>
+                                <path
+                                    d="M417.776,92.829H67.237V485h350.537V92.829H417.776z M165.402,431.447h-28.362V146.383h28.362V431.447z M256.689,431.447    h-28.363V146.383h28.363V431.447z M347.97,431.447h-28.361V146.383h28.361V431.447z">
+                                </path>
+                            </g>
+                        </g>
+                    </svg>
+                </button>
+            </section>
+            }
+        </section>
+    </a>
+    if post.Description.Valid && post.Description.String != "" {
+    <hr class="text-verylightgreen/20 dark:text-black/20 my-2" />
+    <section>
+        <p class="m-3 my-0 text-sm sm:text-lg">{ post.Description.String }</p>
+    </section>
+    }
+</li>
 }
 
 templ Toc(content string) {
-	<section class="border-0 bg-slate-300 dark:bg-lightgray rounded-xl" x-data="{ open: false }">
-		<h1
-			class="border-0 bg-slate-300 dark:bg-lightgray p-2 m-0 rounded-xl text-lg sm:text-xl"
-			x-on:click="open = ! open"
-		>
-			Table of Contents
-		</h1>
-		<section class="p-2 **:text-md [&>ul]:text-md [&>ul]:m-0 rounded-xl" x-show="open" x-collapse>
-			@templ.Raw(content)
-		</section>
-	</section>
+<section class="border-0 bg-slate-300 dark:bg-lightgray rounded-xl" x-data="{ open: false }">
+    <h1 class="border-0 bg-slate-300 dark:bg-lightgray p-2 m-0 rounded-xl text-lg sm:text-xl"
+        x-on:click="open = ! open">
+        Table of Contents
+    </h1>
+    <section class="p-2 **:text-md [&>ul]:text-md [&>ul]:m-0 rounded-xl" x-show="open" x-collapse>
+        @templ.Raw(content)
+    </section>
+</section>
 }
 
 templ Markdown(post repository.Post) {
-	<section
-		class="w-full max-w-[min(75ch,100%)] bg-slate-300 dark:bg-midgray text-lg flex rounded-lg flex-col items-center"
-	>
-		<header class="p-3 w-full bg-slate-300 dark:bg-midgray flex flex-col rounded-t-lg justify-start items-start ">
-			<h1 class="p-0 m-0 mb-0 text-4xl/10 sm:text-5xl/15 font-bold break-all ">{ post.Title }</h1>
-			<section class="mt-2 w-full flex flex-col text-sm ">
-				<p class="m-1">Published at { post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
-				<p class="m-1">Edited at { post.ModifiedAt.Time.Format("Jan 01, 2006, at 15:04") }</p>
-			</section>
-		</header>
-		<section class="prose-container">
-			@Toc(post.Toc)
-			@templ.Raw(post.ParsedContent)
-		</section>
-	</section>
+<section
+    class="w-full max-w-[min(75ch,100%)] bg-slate-300 dark:bg-midgray text-lg flex rounded-lg flex-col items-center">
+    <header class="p-3 w-full bg-slate-300 dark:bg-midgray flex flex-col rounded-t-lg justify-start items-start ">
+        <h1 class="p-0 m-0 mb-0 text-4xl/10 sm:text-5xl/15 font-bold break-all ">{ post.Title }</h1>
+        <section class="mt-2 w-full flex flex-col text-sm ">
+            <p class="m-1">Published at { post.CreatedAt.Time.Format("Jan 02, 2006, at 15:04") }</p>
+            <p class="m-1">Edited at { post.ModifiedAt.Time.Format("Jan 02, 2006, at 15:04") }</p>
+        </section>
+    </header>
+    <section class="prose-container">
+        @Toc(post.Toc)
+        @templ.Raw(post.ParsedContent)
+    </section>
+</section>
 }

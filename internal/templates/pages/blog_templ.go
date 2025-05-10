@@ -35,7 +35,7 @@ func Root(title string, component templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"pt-br\" x-data=\"{darkMode: localStorage.getItem(&#39;dark&#39;) === &#39;true&#39;}\" x-init=\"$watch(&#39;darkMode&#39;, val =&gt; localStorage.setItem(&#39;dark&#39;, val))\" x-bind:class=\"{ &#39;dark&#39;: darkMode }\" class=\"light scroll-smooth min-h-screen bg-slate-100 dark:bg-darkgray font-roboto text-lg text-justify\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><script src=\"/static/js/htmx-response-targets.js\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\"></script><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"pt-br\" x-data=\"{darkMode: localStorage.getItem(&#39;dark&#39;) === &#39;true&#39;}\" x-init=\"$watch(&#39;darkMode&#39;, val =&gt; localStorage.setItem(&#39;dark&#39;, val))\" x-bind:class=\"{ &#39;dark&#39;: darkMode }\" class=\"light dark:bg-darkgray font-roboto min-h-screen scroll-smooth bg-slate-100 text-justify text-lg\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/static/styles.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/static/images/favicon.png\"><script src=\"/static/js/htmx.js\"></script><script src=\"/static/js/htmx-response-targets.js\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\"></script><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -48,7 +48,7 @@ func Root(title string, component templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title></head><body hx-ext=\"response-targets\" class=\"min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title></head><body hx-ext=\"response-targets\" class=\"dark:bg-darkgray min-h-screen bg-slate-100 text-black dark:text-white \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -96,7 +96,7 @@ func MainPage(blogname, title string, posts []repository.Post, authenticated boo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<ul id=\"posts-list\" class=\"min-h-screen flex flex-col items-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<ul id=\"posts-list\" class=\"flex min-h-screen flex-col items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -146,12 +146,12 @@ func EditorPage(blogname, pagetitle string, post repository.Post, edit bool, aut
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<main class=\"grid grid-cols-2 min-h-full max-h-[calc(100vh-var(--spacing)*17)]\"><form class=\"w-full flex flex-col justify-start items-center border-darkgray dark:border-slate-100 border-r-5 p-2 max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)]  \" hx-post=\"/post/parse\" hx-target=\"#preview\" hx-swap=\"innerHTML\" hx-trigger=\"keyup delay:500ms, load\"><section class=\"w-full flex flex-col justify-center items-center \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<main class=\"grid max-h-[calc(100vh-var(--spacing)*17)] min-h-full grid-cols-2\"><form class=\"border-darkgray border-r-5 flex h-[calc(100vh-var(--spacing)*17)] max-h-[calc(100vh-var(--spacing)*17)] w-full flex-col items-center justify-start p-2 dark:border-slate-100  \" hx-post=\"/post/parse\" hx-target=\"#preview\" hx-swap=\"innerHTML\" hx-trigger=\"keyup delay:500ms, load\"><section class=\"flex w-full flex-col items-center justify-center \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if edit {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer\" type=\"button\" value=\"Save\" hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<input class=\"border-1 border-darkgray hover:bg-darkgray w-full rounded-md p-3 text-lg hover:cursor-pointer hover:text-white dark:border-slate-100 dark:hover:bg-slate-100 dark:hover:text-black\" type=\"button\" value=\"Save\" hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -169,12 +169,12 @@ func EditorPage(blogname, pagetitle string, post repository.Post, edit bool, aut
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer\" type=\"button\" value=\"Save\" hx-post=\"/post/new\" hx-target-400=\"#teste\" hx-target-401=\"#teste\"> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<input class=\"border-1 border-darkgray hover:bg-darkgray w-full rounded-md p-3 text-lg hover:cursor-pointer hover:text-white dark:border-slate-100 dark:hover:bg-slate-100 dark:hover:text-black\" type=\"button\" value=\"Save\" hx-post=\"/post/new\" hx-target-400=\"#teste\" hx-target-401=\"#teste\"> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span id=\"teste\" class=\"text-red-500\"></span> <label for=\"title\" class=\"w-full text-lg font-bold\">Title</label> <input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md\" type=\"text\" name=\"title\" id=\"title\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span id=\"teste\" class=\"text-red-500\"></span> <label for=\"title\" class=\"w-full text-lg font-bold\">Title</label> <input class=\"border-1 border-darkgray w-full rounded-md p-3 text-lg dark:border-slate-100\" type=\"text\" name=\"title\" id=\"title\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -187,7 +187,7 @@ func EditorPage(blogname, pagetitle string, post repository.Post, edit bool, aut
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <label for=\"slug\" class=\"w-full text-lg font-bold\">Slug</label> <input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md\" type=\"text\" name=\"slug\" id=\"slug\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <label for=\"slug\" class=\"w-full text-lg font-bold\">Slug</label> <input class=\"border-1 border-darkgray w-full rounded-md p-3 text-lg dark:border-slate-100\" type=\"text\" name=\"slug\" id=\"slug\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -200,7 +200,7 @@ func EditorPage(blogname, pagetitle string, post repository.Post, edit bool, aut
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"> <label for=\"description\" class=\"w-full text-lg font-bold\">Description</label> <input class=\"w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md\" type=\"text\" name=\"description\" id=\"description\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"> <label for=\"description\" class=\"w-full text-lg font-bold\">Description</label> <input class=\"border-1 border-darkgray w-full rounded-md p-3 text-lg dark:border-slate-100\" type=\"text\" name=\"description\" id=\"description\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -213,7 +213,7 @@ func EditorPage(blogname, pagetitle string, post repository.Post, edit bool, aut
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <label for=\"content\" class=\"w-full text-lg font-bold\">Content</label></section><textarea class=\"w-full resize-none h-full p-3 border-1 border-darkgray dark:border-slate-100 rounded-md\" name=\"content\" id=\"content\" cols=\"30\" rows=\"10\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <label for=\"content\" class=\"w-full text-lg font-bold\">Content</label></section><textarea class=\"border-1 border-darkgray h-full w-full resize-none rounded-md p-3 dark:border-slate-100\" name=\"content\" id=\"content\" cols=\"30\" rows=\"10\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -226,7 +226,7 @@ func EditorPage(blogname, pagetitle string, post repository.Post, edit bool, aut
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</textarea></form><section id=\"preview\" class=\"flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)] overflow-x-hidden\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</textarea></form><section id=\"preview\" class=\"flex h-[calc(100vh-var(--spacing)*17)] max-h-[calc(100vh-var(--spacing)*17)] w-full max-w-[50vw] flex-col items-center overflow-scroll overflow-x-hidden p-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -275,7 +275,7 @@ func PostPage(blogname, title string, post repository.Post, authenticated bool) 
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<section class=\"flex flex-col justify-center items-center p-0 sm:p-4 pt-10\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<section class=\"flex flex-col items-center justify-center p-0 pt-10 sm:p-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -316,7 +316,7 @@ func LoginPage(blogname, title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<main class=\"flex flex-col justify-center items-center p-4 pt-10\"><form class=\"flex flex-col justify-center items-center rounded-xl p-10 bg-slate-200 dark:bg-lightgray dark:text-white text-black\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"w-full p-3 mt-2 text-lg  bg-white dark:bg-darkgray rounded-md\n                text-darkgray dark:text-slate-100 hover:bg-slate-100/95 dark:hover:bg-midgray hover:cursor-pointer transition-colors\" type=\"submit\" value=\"Login\"></form></main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<main class=\"flex flex-col items-center justify-center p-4 pt-10\"><form class=\"dark:bg-lightgray flex flex-col items-center justify-center rounded-xl bg-slate-200 p-10 text-black dark:text-white\" hx-post=\"/login\" hx-ext=\"response-targets\" hx-target-401=\"#error\"><label for=\"username\" class=\"w-full text-lg font-bold\">Username</label> <input class=\"border-1 dark:bg-darkgray text-darkgray w-full  rounded-md bg-slate-100 p-3 text-lg dark:text-slate-100\" type=\"text\" name=\"username\" id=\"username\"> <label for=\"password\" class=\"w-full text-lg font-bold\">Password</label> <input class=\"border-1 dark:bg-darkgray text-darkgray w-full  rounded-md bg-slate-100 p-3 text-lg dark:text-slate-100\" type=\"password\" name=\"password\" id=\"password\"> <span id=\"error\" class=\"text-red-500\"></span> <input class=\"dark:bg-darkgray text-darkgray dark:hover:bg-midgray mt-2  w-full rounded-md bg-white\n                p-3 text-lg transition-colors hover:cursor-pointer hover:bg-slate-100/95 dark:text-slate-100\" type=\"submit\" value=\"Login\"></form></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

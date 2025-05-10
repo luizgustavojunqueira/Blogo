@@ -24,7 +24,6 @@ type BlogoConfig struct {
 	Title      string
 	Port       string
 	DB         *sql.DB // A PostgreSQL connection
-	auth       *auth.Auth
 	AuthConfig *auth.AuthConfig
 	Logger     *log.Logger
 	Location   *time.Location

@@ -13,7 +13,7 @@ templ Root(title string, component templ.Component) {
 		x-data="{darkMode: localStorage.getItem('dark') === 'true'}"
 		x-init="$watch('darkMode', val => localStorage.setItem('dark', val))"
 		x-bind:class="{ 'dark': darkMode }"
-		class="light scroll-smooth min-h-screen bg-slate-100 dark:bg-darkgray font-roboto text-lg text-justify"
+		class="light dark:bg-darkgray font-roboto min-h-screen scroll-smooth bg-slate-100 text-justify text-lg"
 	>
 		<head>
 			<meta charset="UTF-8"/>
@@ -26,7 +26,7 @@ templ Root(title string, component templ.Component) {
 			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 			<title>{ title }</title>
 		</head>
-		<body hx-ext="response-targets" class="min-h-screen bg-slate-100 dark:bg-darkgray text-black dark:text-white ">
+		<body hx-ext="response-targets" class="dark:bg-darkgray min-h-screen bg-slate-100 text-black dark:text-white ">
 			@component
 		</body>
 	</html>
@@ -38,7 +38,7 @@ templ MainPage(blogname, title string, posts []repository.Post, authenticated bo
 	} else {
 		@components.Header(blogname, []string{"Login"}, []string{"/login"})
 	}
-	<ul id="posts-list" class="min-h-screen flex flex-col items-center">
+	<ul id="posts-list" class="flex min-h-screen flex-col items-center">
 		for _, post := range posts {
 			@components.PostCard(post, authenticated)
 		}
@@ -51,18 +51,18 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 	} else {
 		@components.Header(blogname, []string{"Back to Home", "Login"}, []string{"/", "/login"})
 	}
-	<main class="grid grid-cols-2 min-h-full max-h-[calc(100vh-var(--spacing)*17)]">
+	<main class="grid max-h-[calc(100vh-var(--spacing)*17)] min-h-full grid-cols-2">
 		<form
-			class="w-full flex flex-col justify-start items-center border-darkgray dark:border-slate-100 border-r-5 p-2 max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)]  "
+			class="border-darkgray border-r-5 flex h-[calc(100vh-var(--spacing)*17)] max-h-[calc(100vh-var(--spacing)*17)] w-full flex-col items-center justify-start p-2 dark:border-slate-100  "
 			hx-post="/post/parse"
 			hx-target="#preview"
 			hx-swap="innerHTML"
 			hx-trigger="keyup delay:500ms, load"
 		>
-			<section class="w-full flex flex-col justify-center items-center ">
+			<section class="flex w-full flex-col items-center justify-center ">
 				if edit {
 					<input
-						class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer"
+						class="border-1 border-darkgray hover:bg-darkgray w-full rounded-md p-3 text-lg hover:cursor-pointer hover:text-white dark:border-slate-100 dark:hover:bg-slate-100 dark:hover:text-black"
 						type="button"
 						value="Save"
 						hx-post={ "/post/edit/" + post.Slug }
@@ -71,7 +71,7 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 					/>
 				} else {
 					<input
-						class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md hover:bg-darkgray hover:text-white dark:hover:bg-slate-100 dark:hover:text-black hover:cursor-pointer"
+						class="border-1 border-darkgray hover:bg-darkgray w-full rounded-md p-3 text-lg hover:cursor-pointer hover:text-white dark:border-slate-100 dark:hover:bg-slate-100 dark:hover:text-black"
 						type="button"
 						value="Save"
 						hx-post="/post/new"
@@ -82,7 +82,7 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 				<span id="teste" class="text-red-500"></span>
 				<label for="title" class="w-full text-lg font-bold">Title</label>
 				<input
-					class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md"
+					class="border-1 border-darkgray w-full rounded-md p-3 text-lg dark:border-slate-100"
 					type="text"
 					name="title"
 					id="title"
@@ -90,7 +90,7 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 				/>
 				<label for="slug" class="w-full text-lg font-bold">Slug</label>
 				<input
-					class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md"
+					class="border-1 border-darkgray w-full rounded-md p-3 text-lg dark:border-slate-100"
 					type="text"
 					name="slug"
 					id="slug"
@@ -98,7 +98,7 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 				/>
 				<label for="description" class="w-full text-lg font-bold">Description</label>
 				<input
-					class="w-full p-3 text-lg border-1 border-darkgray dark:border-slate-100 rounded-md"
+					class="border-1 border-darkgray w-full rounded-md p-3 text-lg dark:border-slate-100"
 					type="text"
 					name="description"
 					id="description"
@@ -107,7 +107,7 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 				<label for="content" class="w-full text-lg font-bold">Content</label>
 			</section>
 			<textarea
-				class="w-full resize-none h-full p-3 border-1 border-darkgray dark:border-slate-100 rounded-md"
+				class="border-1 border-darkgray h-full w-full resize-none rounded-md p-3 dark:border-slate-100"
 				name="content"
 				id="content"
 				cols="30"
@@ -118,7 +118,7 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 		</form>
 		<section
 			id="preview"
-			class="flex flex-col items-center w-full overflow-scroll p-3 max-w-[50vw] max-h-[calc(100vh-var(--spacing)*17)] h-[calc(100vh-var(--spacing)*17)] overflow-x-hidden"
+			class="flex h-[calc(100vh-var(--spacing)*17)] max-h-[calc(100vh-var(--spacing)*17)] w-full max-w-[50vw] flex-col items-center overflow-scroll overflow-x-hidden p-3"
 		>
 			@components.Markdown(post)
 		</section>
@@ -132,38 +132,38 @@ templ PostPage(blogname, title string, post repository.Post, authenticated bool)
 	} else {
 		@components.Header(blogname, []string{"Back to Home", "Login"}, []string{"/", "/login"})
 	}
-	<section class="flex flex-col justify-center items-center p-0 sm:p-4 pt-10">
+	<section class="flex flex-col items-center justify-center p-0 pt-10 sm:p-4">
 		@components.Markdown(post)
 	</section>
 }
 
 templ LoginPage(blogname, title string) {
 	@components.Header(blogname, []string{"Back to Home"}, []string{"/"})
-	<main class="flex flex-col justify-center items-center p-4 pt-10">
+	<main class="flex flex-col items-center justify-center p-4 pt-10">
 		<form
-			class="flex flex-col justify-center items-center rounded-xl p-10 bg-slate-200 dark:bg-lightgray dark:text-white text-black"
+			class="dark:bg-lightgray flex flex-col items-center justify-center rounded-xl bg-slate-200 p-10 text-black dark:text-white"
 			hx-post="/login"
 			hx-ext="response-targets"
 			hx-target-401="#error"
 		>
 			<label for="username" class="w-full text-lg font-bold">Username</label>
 			<input
-				class="w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100"
+				class="border-1 dark:bg-darkgray text-darkgray w-full  rounded-md bg-slate-100 p-3 text-lg dark:text-slate-100"
 				type="text"
 				name="username"
 				id="username"
 			/>
 			<label for="password" class="w-full text-lg font-bold">Password</label>
 			<input
-				class="w-full p-3 text-lg border-1  rounded-md bg-slate-100 dark:bg-darkgray text-darkgray dark:text-slate-100"
+				class="border-1 dark:bg-darkgray text-darkgray w-full  rounded-md bg-slate-100 p-3 text-lg dark:text-slate-100"
 				type="password"
 				name="password"
 				id="password"
 			/>
 			<span id="error" class="text-red-500"></span>
 			<input
-				class="w-full p-3 mt-2 text-lg  bg-white dark:bg-darkgray rounded-md
-                text-darkgray dark:text-slate-100 hover:bg-slate-100/95 dark:hover:bg-midgray hover:cursor-pointer transition-colors"
+				class="dark:bg-darkgray text-darkgray dark:hover:bg-midgray mt-2  w-full rounded-md bg-white
+                p-3 text-lg transition-colors hover:cursor-pointer hover:bg-slate-100/95 dark:text-slate-100"
 				type="submit"
 				value="Login"
 			/>

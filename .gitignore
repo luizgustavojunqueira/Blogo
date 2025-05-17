@@ -2,3 +2,4 @@ tmp
 .env
 blog.db
 bin
+node_modules

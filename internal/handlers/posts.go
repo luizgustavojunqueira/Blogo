@@ -3,9 +3,11 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -26,6 +28,7 @@ import (
 
 type PostHandler struct {
 	repository PostRepository
+	tagsRepo   TagRepository
 	md         goldmark.Markdown
 	location   *time.Location
 	logger     *log.Logger
@@ -39,7 +42,8 @@ type PostRepository interface {
 	CreatePost(ctx context.Context, arg repository.CreatePostParams) (repository.Post, error)
 	GetPostBySlug(ctx context.Context, slug string) (repository.Post, error)
 	DeletePostBySlug(ctx context.Context, slug string) error
-	UpdatePostBySlug(ctx context.Context, arg repository.UpdatePostBySlugParams) error
+	UpdatePostBySlug(ctx context.Context, arg repository.UpdatePostBySlugParams) (repository.Post, error)
+	GetPostsByTag(ctx context.Context, tag string) ([]repository.Post, error)
 }
 
 type Auth interface {
@@ -47,7 +51,7 @@ type Auth interface {
 	GetCookieName() string
 }
 
-func NewPostHandler(repo PostRepository, location *time.Location, logger *log.Logger, auth Auth, blogName, pagetitle string) *PostHandler {
+func NewPostHandler(repo PostRepository, tagsRepo TagRepository, location *time.Location, logger *log.Logger, auth Auth, blogName, pagetitle string) *PostHandler {
 	md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.Table, extension.Typographer, highlighting.NewHighlighting(
 		highlighting.WithStyle("dracula"),
 		highlighting.WithFormatOptions(
@@ -65,6 +69,7 @@ func NewPostHandler(repo PostRepository, location *time.Location, logger *log.Lo
 
 	return &PostHandler{
 		repository: repo,
+		tagsRepo:   tagsRepo,
 		md:         md,
 		logger:     logger,
 		location:   location,
@@ -76,23 +81,23 @@ func NewPostHandler(repo PostRepository, location *time.Location, logger *log.Lo
 
 func validatePost(title, content, slug string) error {
 	if title == "" || content == "" || slug == "" {
-		return fmt.Errorf("Title, content and slug are required")
+		return fmt.Errorf("title, content and slug are required")
 	}
 
 	if len(title) > 40 {
-		return fmt.Errorf("Title must be less than 40 characters")
+		return fmt.Errorf("title must be less than 40 characters")
 	} else if len(title) < 5 {
-		return fmt.Errorf("Title must be more than 5 characters")
+		return fmt.Errorf("title must be more than 5 characters")
 	}
 
 	if len(slug) > 50 {
-		return fmt.Errorf("Slug must be less than 50 characters")
+		return fmt.Errorf("slug must be less than 50 characters")
 	} else if len(slug) < 5 {
-		return fmt.Errorf("Slug must be more than 5 characters")
+		return fmt.Errorf("slug must be more than 5 characters")
 	}
 
 	if len(content) > 10000 {
-		return fmt.Errorf("Content must be less than 10000 characters")
+		return fmt.Errorf("content must be less than 10000 characters")
 	}
 	return nil
 }
@@ -134,7 +139,30 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mainPage := pages.MainPage(h.blogName, h.pagetitle, posts, authenticated)
+	postsWithTags := make([]repository.PostWithTags, len(posts))
+
+	for i, post := range posts {
+		tags, err := h.tagsRepo.GetTagsByPost(ctx, post.Slug)
+		if err != nil {
+			h.logger.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		postsWithTags[i] = repository.PostWithTags{
+			ID:            post.ID,
+			Title:         post.Title,
+			Slug:          post.Slug,
+			CreatedAt:     post.CreatedAt,
+			ModifiedAt:    post.ModifiedAt,
+			ParsedContent: post.ParsedContent,
+			Description:   post.Description,
+			Toc:           post.Toc,
+			Content:       post.Content,
+			Tags:          tags,
+		}
+	}
+
+	mainPage := pages.MainPage(h.blogName, h.pagetitle, postsWithTags, authenticated, "")
 
 	root := pages.Root(h.blogName, mainPage)
 
@@ -173,6 +201,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 	slug := r.FormValue("slug")
 	description := r.FormValue("description")
+	tags := r.FormValue("tags")
 
 	if err := validatePost(title, content, slug); err != nil {
 		h.logger.Println(err)
@@ -212,9 +241,72 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("HX-Location", "/")
+	createdTags := make([]repository.Tag, 0)
 
-	card := components.PostCard(createdPost, authenticated)
+	if tags != "" {
+		tagNames := strings.Split(tags, ",")
+
+		h.logger.Printf("Creating tags: %v\n", tagNames)
+
+		for _, tagName := range tagNames {
+			tagName = strings.TrimSpace(tagName)
+			if tagName == "" {
+				continue
+			}
+
+			h.logger.Printf("Creating tag: %s\n", tagName)
+
+			tag, err := h.tagsRepo.CreateTagIfNotExists(ctx, repository.CreateTagIfNotExistsParams{
+				Name:       tagName,
+				CreatedAt:  pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+				ModifiedAt: pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+			})
+			if err != nil {
+				h.logger.Println(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			h.logger.Printf("Adding tag %s to post %s\n", tagName, createdPost.Slug)
+
+			err = h.tagsRepo.AddTagToPost(ctx, repository.AddTagToPostParams{
+				PostID: createdPost.ID,
+				TagID:  tag[0].ID,
+			})
+			if err != nil {
+				h.logger.Println(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			createdTag := repository.Tag{
+				ID:         tag[0].ID,
+				Name:       tag[0].Name,
+				CreatedAt:  tag[0].CreatedAt,
+				ModifiedAt: tag[0].ModifiedAt,
+			}
+
+			createdTags = append(createdTags, createdTag)
+		}
+	}
+
+	w.Header().Set("HX-Location", "/")
+	w.WriteHeader(http.StatusOK)
+
+	createdPostWithTags := repository.PostWithTags{
+		ID:            createdPost.ID,
+		Title:         createdPost.Title,
+		Slug:          createdPost.Slug,
+		CreatedAt:     createdPost.CreatedAt,
+		ModifiedAt:    createdPost.ModifiedAt,
+		ParsedContent: createdPost.ParsedContent,
+		Description:   createdPost.Description,
+		Content:       createdPost.Content,
+		Toc:           createdPost.Toc,
+		Tags:          createdTags,
+	}
+
+	card := components.PostCard(createdPostWithTags, authenticated)
 	card.Render(ctx, w)
 }
 
@@ -249,14 +341,44 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		editorPage := pages.EditorPage(h.blogName, h.pagetitle, post, true, authenticated)
+		tags, err := h.tagsRepo.GetTagsByPost(ctx, post.Slug)
+		if err != nil {
+			h.logger.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		postWithTags := repository.PostWithTags{
+			ID:            post.ID,
+			Title:         post.Title,
+			Slug:          post.Slug,
+			CreatedAt:     post.CreatedAt,
+			ModifiedAt:    post.ModifiedAt,
+			ParsedContent: post.ParsedContent,
+			Description:   post.Description,
+			Content:       post.Content,
+			Toc:           post.Toc,
+			Tags:          tags,
+		}
+
+		tagsJson := make([]string, len(tags))
+		for i, tag := range tags {
+			tagsJson[i] = tag.Name
+		}
+
+		tagsJsonBytes, _ := json.Marshal(tagsJson) // retorna []byte JSON válido
+		tagsJsonString := string(tagsJsonBytes)    // converte para string JSON: ["tag1","tag2"]
+
+		h.logger.Printf("Tags: %s\n", tagsJsonString)
+
+		editorPage := pages.EditorPage(h.blogName, h.pagetitle, postWithTags, true, authenticated, tagsJsonString)
 
 		page := pages.Root(h.blogName, editorPage)
 		page.Render(ctx, w)
 		return
 	}
 
-	editorPage := pages.EditorPage(h.blogName, h.pagetitle, repository.Post{}, false, authenticated)
+	editorPage := pages.EditorPage(h.blogName, h.pagetitle, repository.PostWithTags{}, false, authenticated, "")
 
 	page := pages.Root(h.blogName, editorPage)
 	page.Render(ctx, w)
@@ -293,6 +415,7 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	slug := r.FormValue("slug")
+	tags := r.FormValue("tags")
 
 	var buf bytes.Buffer
 	if err := h.md.Convert([]byte(content), &buf); err != nil {
@@ -308,12 +431,31 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post := repository.Post{
+	postTags := make([]repository.Tag, 0)
+
+	if tags != "" {
+		tagNames := strings.Split(tags, ",")
+		for _, tagName := range tagNames {
+			tagName = strings.TrimSpace(tagName)
+			if tagName == "" {
+				continue
+			}
+			tag := repository.Tag{
+				Name:       tagName,
+				CreatedAt:  pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+				ModifiedAt: pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+			}
+			postTags = append(postTags, tag)
+		}
+	}
+
+	post := repository.PostWithTags{
 		Title:         title,
 		Content:       content,
 		ParsedContent: buf.String(),
 		Toc:           toc,
 		Slug:          slug,
+		Tags:          postTags,
 	}
 
 	markdown := components.Markdown(post)
@@ -342,7 +484,27 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	postPage := pages.PostPage(h.blogName, h.pagetitle, post, authenticated)
+	postTags, err := h.tagsRepo.GetTagsByPost(ctx, post.Slug)
+	if err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	postWithTags := repository.PostWithTags{
+		ID:            post.ID,
+		Title:         post.Title,
+		Slug:          post.Slug,
+		CreatedAt:     post.CreatedAt,
+		ModifiedAt:    post.ModifiedAt,
+		ParsedContent: post.ParsedContent,
+		Description:   post.Description,
+		Content:       post.Content,
+		Toc:           post.Toc,
+		Tags:          postTags,
+	}
+
+	postPage := pages.PostPage(h.blogName, h.pagetitle, postWithTags, authenticated)
 
 	page := pages.Root(h.blogName, postPage)
 	page.Render(ctx, w)
@@ -411,6 +573,7 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	newSlug := r.FormValue("slug")
 	newContent := r.FormValue("content")
 	newDescription := r.FormValue("description")
+	newTags := r.FormValue("tags")
 
 	if err := validatePost(newTitle, newContent, newSlug); err != nil {
 		h.logger.Println(err)
@@ -443,12 +606,105 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 	}
 
-	err = h.repository.UpdatePostBySlug(ctx, post)
+	updatedPost, err := h.repository.UpdatePostBySlug(ctx, post)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	err = h.tagsRepo.ClearPostTagsBySlug(ctx, slug)
+	if err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if newTags != "" {
+		tagNames := strings.Split(newTags, ",")
+		for _, tagName := range tagNames {
+			tagName = strings.TrimSpace(tagName)
+			if tagName == "" {
+				continue
+			}
+			tag, err := h.tagsRepo.CreateTagIfNotExists(ctx, repository.CreateTagIfNotExistsParams{
+				Name:       tagName,
+				CreatedAt:  pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+				ModifiedAt: pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+			})
+			if err != nil {
+				h.logger.Println(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			err = h.tagsRepo.AddTagToPost(ctx, repository.AddTagToPostParams{
+				PostID: updatedPost.ID,
+				TagID:  tag[0].ID,
+			})
+		}
+	}
+
 	w.Header().Set("HX-Location", "/")
+}
+
+func (h *PostHandler) GetPostsByTag(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	cookie, err := r.Cookie(h.auth.GetCookieName())
+	authenticated := false
+	if err == nil {
+		authenticated, err = h.auth.ValidateToken(cookie.Value)
+		if err != nil {
+			h.logger.Println(err)
+		}
+	}
+
+	tag := r.PathValue("tag")
+	if tag == "" {
+		http.Error(w, "Tag parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	tags, err := h.tagsRepo.SearchTags(ctx, pgtype.Text{String: tag, Valid: true})
+	if err != nil {
+		h.logger.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	postsWithTags := make([]repository.PostWithTags, 0)
+
+	for _, tag := range tags {
+		posts, err := h.repository.GetPostsByTag(ctx, tag)
+		if err != nil {
+			h.logger.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		for _, post := range posts {
+			tags, err := h.tagsRepo.GetTagsByPost(ctx, post.Slug)
+			if err != nil {
+				h.logger.Println(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			postsWithTags = append(postsWithTags, repository.PostWithTags{
+				ID:            post.ID,
+				Title:         post.Title,
+				Slug:          post.Slug,
+				CreatedAt:     post.CreatedAt,
+				ModifiedAt:    post.ModifiedAt,
+				ParsedContent: post.ParsedContent,
+				Description:   post.Description,
+				Toc:           post.Toc,
+				Content:       post.Content,
+				Tags:          tags,
+			},
+			)
+		}
+	}
+	mainPage := pages.MainPage(h.blogName, h.pagetitle, postsWithTags, authenticated, tag)
+	root := pages.Root(h.blogName, mainPage)
+	root.Render(ctx, w)
 }

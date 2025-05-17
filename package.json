@@ -1,0 +1,12 @@
+{
+    "scripts": {
+        "tailwind": "tailwindcss -i ./internal/static/custom.css -o ./internal/static/styles.css --minify"
+    },
+    "dependencies": {
+        "@tailwindcss/cli": "^4.1.7",
+        "tailwindcss": "^4.1.7"
+    },
+    "devDependencies": {
+        "@tailwindcss/typography": "^0.5.16"
+    }
+}

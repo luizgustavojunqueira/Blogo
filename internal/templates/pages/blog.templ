@@ -32,11 +32,19 @@ templ Root(title string, component templ.Component) {
 	</html>
 }
 
-templ MainPage(blogname, title string, posts []repository.Post, authenticated bool) {
+templ MainPage(blogname, title string, posts []repository.PostWithTags, authenticated bool, filterTag string) {
 	if authenticated {
 		@components.Header(blogname, []string{"New Post", "Logout"}, []string{"/editor", "/logout"})
 	} else {
 		@components.Header(blogname, []string{"Login"}, []string{"/login"})
+	}
+	if filterTag != "" {
+		<section class="w-full flex flex-col justify-center items-center ">
+			<section class="w-full max-w-[min(80ch,100%)] flex flex-row items-center text-darkgray  dark:text-white transition-colors px-4 ">
+				<span class="text-md sm:text-xl">Filtered by tag:&nbsp;</span>
+				<span class="text-md sm:text-xl">{ filterTag }</span>
+			</section>
+		</section>
 	}
 	<ul id="posts-list" class="flex min-h-screen flex-col items-center">
 		for _, post := range posts {
@@ -45,7 +53,7 @@ templ MainPage(blogname, title string, posts []repository.Post, authenticated bo
 	</ul>
 }
 
-templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, authenticated bool) {
+templ EditorPage(blogname, pagetitle string, post repository.PostWithTags, edit bool, authenticated bool, tagsJsonString string) {
 	if authenticated {
 		@components.Header(blogname, []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
 	} else {
@@ -104,6 +112,102 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 					id="description"
 					value={ post.Description.String }
 				/>
+				<div
+					x-data="tagSelector()"
+					x-init={ "selectedTags = " + tagsJsonString }
+					class="w-full"
+				>
+					<label for="tag-input" class="w-full text-lg font-bold">Tags</label>
+					<input
+						id="tag-input"
+						type="text"
+						x-model="query"
+						@keydown.enter.prevent="addTag(query)"
+						@input.debounce.300ms="searchTags()"
+						autocomplete="off"
+						class="border-1 border-darkgray w-full rounded-md p-3 text-lg dark:border-slate-100"
+						placeholder="Digite para buscar ou criar tags"
+					/>
+					<ul
+						x-show="suggestions.length > 0 && query.length > 0"
+						class="border border-gray-300 rounded-md mt-1 max-h-40 overflow-auto bg-white dark:bg-gray-800"
+					>
+						<template x-for="tag in suggestions" :key="tag">
+							<li
+								@click="addTag(tag)"
+								class="cursor-pointer px-3 py-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+								x-text="tag"
+							></li>
+						</template>
+					</ul>
+					<!-- Tags selecionadas -->
+					<div class="mt-2 flex flex-wrap gap-2">
+						<template x-for="(tag, index) in selectedTags" :key="tag">
+							<div
+								class="flex items-center rounded bg-blue-500 px-2 py-1 text-white"
+							>
+								<span x-text="tag"></span>
+								<button
+									type="button"
+									@click="removeTag(index)"
+									class="ml-1 font-bold hover:text-gray-300"
+									aria-label="Remover tag"
+								>
+									&times;
+								</button>
+							</div>
+						</template>
+					</div>
+					<!-- Campo hidden para enviar as tags no form -->
+					<input
+						type="hidden"
+						name="tags"
+						:value="selectedTags.join(',')"
+					/>
+				</div>
+				<script>
+        function tagSelector() {
+            return {
+query: '',
+           suggestions: [],
+           selectedTags: [],
+
+           searchTags() {
+               if (this.query.length === 0) {
+                   this.suggestions = [];
+                   return;
+               }
+               fetch(`/tags/search/${encodeURIComponent(this.query)}`)
+                   .then((res) => {
+                           if (!res.ok) throw new Error('Network response was not ok');
+                           return res.json();
+                           })
+               .then((data) => {
+                       this.suggestions = data.filter(
+                               (tag) => !this.selectedTags.includes(tag)
+                               );
+                       })
+               .catch(() => {
+                       this.suggestions = [];
+                       });
+           },
+
+           addTag(tag) {
+               tag = tag.trim();
+               if (tag.length === 0) return;
+               if (!this.selectedTags.includes(tag)) {
+                   this.selectedTags.push(tag);
+               }
+               this.query = '';
+               this.suggestions = [];
+           },
+
+           removeTag(index) {
+               this.selectedTags.splice(index, 1);
+           },
+            };
+        }
+    </script>
 				<label for="content" class="w-full text-lg font-bold">Content</label>
 			</section>
 			<textarea
@@ -125,7 +229,7 @@ templ EditorPage(blogname, pagetitle string, post repository.Post, edit bool, au
 	</main>
 }
 
-templ PostPage(blogname, title string, post repository.Post, authenticated bool) {
+templ PostPage(blogname, title string, post repository.PostWithTags, authenticated bool) {
 	if authenticated {
 		@components.Header(blogname, []string{"Back to Home", "Edit", "Logout"}, []string{"/", "/editor/" + post.Slug,
 			"/logout"})
@@ -163,7 +267,7 @@ templ LoginPage(blogname, title string) {
 			<span id="error" class="text-red-500"></span>
 			<input
 				class="dark:bg-darkgray text-darkgray dark:hover:bg-midgray mt-2  w-full rounded-md bg-white
-                p-3 text-lg transition-colors hover:cursor-pointer hover:bg-slate-100/95 dark:text-slate-100"
+        p-3 text-lg transition-colors hover:cursor-pointer hover:bg-slate-100/95 dark:text-slate-100"
 				type="submit"
 				value="Login"
 			/>

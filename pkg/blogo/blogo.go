@@ -43,12 +43,18 @@ type Blogo struct {
 
 type PostHandler interface {
 	GetPosts(w http.ResponseWriter, r *http.Request)
+	GetPostsByTag(w http.ResponseWriter, r *http.Request)
 	CreatePost(w http.ResponseWriter, r *http.Request)
 	ParseMarkdown(w http.ResponseWriter, r *http.Request)
 	Editor(w http.ResponseWriter, r *http.Request)
 	ViewPost(w http.ResponseWriter, r *http.Request)
 	DeletePost(w http.ResponseWriter, r *http.Request)
 	EditPost(w http.ResponseWriter, r *http.Request)
+}
+
+type TagHandler interface {
+	GetTags(w http.ResponseWriter, r *http.Request)
+	SearchTag(w http.ResponseWriter, r *http.Request)
 }
 
 type AuthHandler interface {
@@ -61,11 +67,11 @@ type AuthHandler interface {
 // Note: The database connection must be a PostgreSQL connection.
 func NewBlogo(config *BlogoConfig) (*Blogo, error) {
 	if config.DB == nil {
-		return nil, errors.New("A database connection is required")
+		return nil, errors.New("a database connection is required")
 	}
 
 	if config.AuthConfig == nil {
-		return nil, errors.New("Auth configuration is required")
+		return nil, errors.New("auth configuration is required")
 	}
 
 	auth, err := auth.NewAuth(*config.AuthConfig)
@@ -74,30 +80,30 @@ func NewBlogo(config *BlogoConfig) (*Blogo, error) {
 	}
 
 	if config.BlogName == "" {
-		return nil, errors.New("A Blog name is required")
+		return nil, errors.New("a Blog name is required")
 	}
 
 	if config.Port == "" {
-		return nil, errors.New("Server port is required")
+		return nil, errors.New("server port is required")
 	}
 
 	if config.Logger == nil {
-		fmt.Println("Logger not provided. Using default logger")
+		fmt.Println("logger not provided. Using default logger")
 		config.Logger = log.New(os.Stdout, "", log.LstdFlags)
 	}
 
 	if config.Location == nil {
-		fmt.Println("Location not provided. Using default location")
+		fmt.Println("location not provided. Using default location")
 		config.Location = time.Local
 	}
 
 	if config.Title == "" {
-		fmt.Println("Title not provided. Using default title")
+		fmt.Println("title not provided. Using default title")
 		config.Title = "Blogo"
 	}
 
 	if config.Queries == nil {
-		return nil, errors.New("Queries not provided")
+		return nil, errors.New("queries not provided")
 	}
 
 	blog := &Blogo{
@@ -116,9 +122,13 @@ func NewBlogo(config *BlogoConfig) (*Blogo, error) {
 
 // Start starts the blog server and listens for incoming requests.
 func (blogo *Blogo) Start() error {
-	var postHandler PostHandler = handlers.NewPostHandler(blogo.queries, blogo.location, blogo.logger, blogo.auth, blogo.blogName, blogo.title)
+	// var postHandler PostHandler = handlers.NewPostHandler(blogo.queries, blogo.queries, blogo.location, blogo.logger, blogo.auth, blogo.blogName, blogo.title)
+
+	var postHandler PostHandler = handlers.NewPostHandler(blogo.queries, blogo.queries, blogo.location, blogo.logger, blogo.auth, blogo.blogName, blogo.title)
 
 	var authHandler AuthHandler = handlers.NewAuthHandler(blogo.auth, blogo.logger, blogo.blogName, blogo.title)
+
+	var tagHandler TagHandler = handlers.NewTagsHandler(blogo.queries, blogo.logger)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("internal/static"))))
 
@@ -130,6 +140,10 @@ func (blogo *Blogo) Start() error {
 	http.HandleFunc("/post/{slug}", postHandler.ViewPost)
 	http.HandleFunc("/post/delete/{slug}", postHandler.DeletePost)
 	http.HandleFunc("/post/edit/{slug}", postHandler.EditPost)
+	http.HandleFunc("/{tag}", postHandler.GetPostsByTag)
+
+	http.HandleFunc("/tags", tagHandler.GetTags)
+	http.HandleFunc("/tags/search/{tag}", tagHandler.SearchTag)
 
 	http.HandleFunc("/login", authHandler.Login)
 	http.HandleFunc("/logout", authHandler.Logout)

@@ -21,9 +21,20 @@ delete from posts
 where slug = $1
 ;
 
--- name: UpdatePostBySlug :exec
+-- name: UpdatePostBySlug :one
 update posts
 set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7
 where slug = $8
+returning *
+;
+
+
+-- name: GetPostsByTag :many
+select p.*
+from posts p
+join tags_posts tp on p.id = tp.post_id
+join tags t on t.id = tp.tag_id
+where t.name = $1
+order by p.created_at desc
 ;
 

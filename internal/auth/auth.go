@@ -85,11 +85,12 @@ func (auth *Auth) GenerateToken(username string, expiry int64) string {
 
 func (auth *Auth) ValidateToken(token string) (bool, error) {
 	if token == "" {
-		return false, fmt.Errorf("Empty Token")
+		return false, fmt.Errorf("empty Token")
 	}
+
 	parts := strings.Split(token, ":")
 	if len(parts) != 3 {
-		return false, fmt.Errorf("Invalid Token")
+		return false, fmt.Errorf("invalid Token")
 	}
 	username := parts[0]
 	expiryStr := parts[1]
@@ -97,11 +98,11 @@ func (auth *Auth) ValidateToken(token string) (bool, error) {
 
 	expiry, err := strconv.ParseInt(expiryStr, 10, 64)
 	if err != nil {
-		return false, fmt.Errorf("Invalid expiry")
+		return false, fmt.Errorf("invalid expiry")
 	}
 
 	if time.Now().Unix() > expiry {
-		return false, fmt.Errorf("Expired Token")
+		return false, fmt.Errorf("expired Token")
 	}
 
 	// Recalcula a assinatura esperada

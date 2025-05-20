@@ -162,6 +162,85 @@ func (q *Queries) GetPostsByTag(ctx context.Context, name string) ([]Post, error
 	return items, nil
 }
 
+const listPostsWithTags = `-- name: ListPostsWithTags :many
+select
+    p.id,
+    p.title,
+    p.content,
+    p.toc,
+    p.parsed_content,
+    p.slug,
+    p.description,
+    p.created_at,
+    p.modified_at,
+    t.id as tag_id,
+    t.name as tag_name,
+    t.created_at as tag_created_at,
+    t.modified_at as tag_modified_at
+from posts p
+left join tags_posts tp on p.id = tp.post_id
+left join tags t on tp.tag_id = t.id
+where
+    $1::text is null
+    or p.id in (
+        select tp2.post_id
+        from tags_posts tp2
+        join tags t2 on tp2.tag_id = t2.id
+        where t2.name = $1
+    )
+order by p.created_at desc, p.id, t.id
+`
+
+type ListPostsWithTagsRow struct {
+	ID            int64
+	Title         string
+	Content       string
+	Toc           string
+	ParsedContent string
+	Slug          string
+	Description   pgtype.Text
+	CreatedAt     pgtype.Timestamp
+	ModifiedAt    pgtype.Timestamp
+	TagID         pgtype.Int8
+	TagName       pgtype.Text
+	TagCreatedAt  pgtype.Timestamp
+	TagModifiedAt pgtype.Timestamp
+}
+
+func (q *Queries) ListPostsWithTags(ctx context.Context, tagName pgtype.Text) ([]ListPostsWithTagsRow, error) {
+	rows, err := q.db.Query(ctx, listPostsWithTags, tagName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPostsWithTagsRow
+	for rows.Next() {
+		var i ListPostsWithTagsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Content,
+			&i.Toc,
+			&i.ParsedContent,
+			&i.Slug,
+			&i.Description,
+			&i.CreatedAt,
+			&i.ModifiedAt,
+			&i.TagID,
+			&i.TagName,
+			&i.TagCreatedAt,
+			&i.TagModifiedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updatePostBySlug = `-- name: UpdatePostBySlug :one
 update posts
 set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7

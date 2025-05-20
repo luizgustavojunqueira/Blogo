@@ -39,8 +39,10 @@ func (h *TagsHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
 	if err := json.NewEncoder(w).Encode(tags); err != nil {
 		h.logger.Println("Error encoding tags to JSON:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -66,7 +68,6 @@ func (h *TagsHandler) SearchTag(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	h.logger.Println("Tags found:", tags)
 	if err := json.NewEncoder(w).Encode(tags); err != nil {
 		h.logger.Println("Error encoding tags to JSON:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

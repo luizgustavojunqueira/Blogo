@@ -19,8 +19,6 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
-	"github.com/yuin/goldmark/text"
-	"go.abhg.dev/goldmark/toc"
 
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
@@ -44,6 +42,7 @@ type PostRepository interface {
 	DeletePostBySlug(ctx context.Context, slug string) error
 	UpdatePostBySlug(ctx context.Context, arg repository.UpdatePostBySlugParams) (repository.Post, error)
 	GetPostsByTag(ctx context.Context, tag string) ([]repository.Post, error)
+	ListPostsWithTags(ctx context.Context, tag pgtype.Text) ([]repository.ListPostsWithTagsRow, error)
 }
 
 type Auth interface {
@@ -79,90 +78,29 @@ func NewPostHandler(repo PostRepository, tagsRepo TagRepository, location *time.
 	}
 }
 
-func validatePost(title, content, slug string) error {
-	if title == "" || content == "" || slug == "" {
-		return fmt.Errorf("title, content and slug are required")
-	}
-
-	if len(title) > 40 {
-		return fmt.Errorf("title must be less than 40 characters")
-	} else if len(title) < 5 {
-		return fmt.Errorf("title must be more than 5 characters")
-	}
-
-	if len(slug) > 50 {
-		return fmt.Errorf("slug must be less than 50 characters")
-	} else if len(slug) < 5 {
-		return fmt.Errorf("slug must be more than 5 characters")
-	}
-
-	if len(content) > 10000 {
-		return fmt.Errorf("content must be less than 10000 characters")
-	}
-	return nil
-}
-
-func getPostToc(md goldmark.Markdown, src []byte) (string, error) {
-	doc := md.Parser().Parse(text.NewReader(src))
-	tree, err := toc.Inspect(doc, src)
-	if err != nil {
-		return "", err
-	}
-	list := toc.RenderList(tree)
-	var tocBuf bytes.Buffer
-	if list != nil {
-		if err := md.Renderer().Render(&tocBuf, src, list); err != nil {
-			return "", err
-		}
-	}
-	return tocBuf.String(), nil
-}
-
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	cookie, err := r.Cookie(h.auth.GetCookieName())
+	authenticated := h.isAuthenticated(r)
 
-	authenticated := false
+	tag := r.PathValue("tag")
 
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-		}
+	tagName := pgtype.Text{String: tag, Valid: true}
+
+	if tag == "" {
+		tagName = pgtype.Text{String: "", Valid: false}
 	}
 
-	posts, err := h.repository.GetPosts(ctx)
+	rows, err := h.repository.ListPostsWithTags(ctx, tagName)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	postsWithTags := make([]repository.PostWithTags, len(posts))
+	posts := generatePostsWithTags(rows)
 
-	for i, post := range posts {
-		tags, err := h.tagsRepo.GetTagsByPost(ctx, post.Slug)
-		if err != nil {
-			h.logger.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		postsWithTags[i] = repository.PostWithTags{
-			ID:            post.ID,
-			Title:         post.Title,
-			Slug:          post.Slug,
-			CreatedAt:     post.CreatedAt,
-			ModifiedAt:    post.ModifiedAt,
-			ParsedContent: post.ParsedContent,
-			Description:   post.Description,
-			Toc:           post.Toc,
-			Content:       post.Content,
-			Tags:          tags,
-		}
-	}
-
-	mainPage := pages.MainPage(h.blogName, h.pagetitle, postsWithTags, authenticated, "")
+	mainPage := pages.MainPage(h.blogName, h.pagetitle, posts, authenticated, "")
 
 	root := pages.Root(h.blogName, mainPage)
 
@@ -170,18 +108,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.GetCookieName())
-
-	authenticated := false
-
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	}
+	authenticated := h.isAuthenticated(r)
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -190,7 +117,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -315,18 +242,7 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	cookie, err := r.Cookie(h.auth.GetCookieName())
-
-	authenticated := false
-
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	}
+	authenticated := h.isAuthenticated(r)
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -385,18 +301,7 @@ func (h *PostHandler) Editor(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.GetCookieName())
-
-	authenticated := false
-
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	}
+	authenticated := h.isAuthenticated(r)
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -405,7 +310,7 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -473,16 +378,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, err := r.Cookie(h.auth.GetCookieName())
-
-	authenticated := false
-
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-		}
-	}
+	authenticated := h.isAuthenticated(r)
 
 	postTags, err := h.tagsRepo.GetTagsByPost(ctx, post.Slug)
 	if err != nil {
@@ -511,18 +407,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.GetCookieName())
-
-	authenticated := false
-
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	}
+	authenticated := h.isAuthenticated(r)
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -533,7 +418,7 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	slug := r.PathValue("slug")
 
-	err = h.repository.DeletePostBySlug(ctx, slug)
+	err := h.repository.DeletePostBySlug(ctx, slug)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -547,18 +432,7 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie(h.auth.GetCookieName())
-
-	authenticated := false
-
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	}
+	authenticated := h.isAuthenticated(r)
 
 	if !authenticated {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -646,65 +520,4 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("HX-Location", "/")
-}
-
-func (h *PostHandler) GetPostsByTag(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	cookie, err := r.Cookie(h.auth.GetCookieName())
-	authenticated := false
-	if err == nil {
-		authenticated, err = h.auth.ValidateToken(cookie.Value)
-		if err != nil {
-			h.logger.Println(err)
-		}
-	}
-
-	tag := r.PathValue("tag")
-	if tag == "" {
-		http.Error(w, "Tag parameter is required", http.StatusBadRequest)
-		return
-	}
-
-	tags, err := h.tagsRepo.SearchTags(ctx, pgtype.Text{String: tag, Valid: true})
-	if err != nil {
-		h.logger.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	postsWithTags := make([]repository.PostWithTags, 0)
-
-	for _, tag := range tags {
-		posts, err := h.repository.GetPostsByTag(ctx, tag)
-		if err != nil {
-			h.logger.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		for _, post := range posts {
-			tags, err := h.tagsRepo.GetTagsByPost(ctx, post.Slug)
-			if err != nil {
-				h.logger.Println(err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			postsWithTags = append(postsWithTags, repository.PostWithTags{
-				ID:            post.ID,
-				Title:         post.Title,
-				Slug:          post.Slug,
-				CreatedAt:     post.CreatedAt,
-				ModifiedAt:    post.ModifiedAt,
-				ParsedContent: post.ParsedContent,
-				Description:   post.Description,
-				Toc:           post.Toc,
-				Content:       post.Content,
-				Tags:          tags,
-			},
-			)
-		}
-	}
-	mainPage := pages.MainPage(h.blogName, h.pagetitle, postsWithTags, authenticated, tag)
-	root := pages.Root(h.blogName, mainPage)
-	root.Render(ctx, w)
 }

@@ -43,7 +43,6 @@ type Blogo struct {
 
 type PostHandler interface {
 	GetPosts(w http.ResponseWriter, r *http.Request)
-	GetPostsByTag(w http.ResponseWriter, r *http.Request)
 	CreatePost(w http.ResponseWriter, r *http.Request)
 	ParseMarkdown(w http.ResponseWriter, r *http.Request)
 	Editor(w http.ResponseWriter, r *http.Request)
@@ -140,7 +139,7 @@ func (blogo *Blogo) Start() error {
 	http.HandleFunc("/post/{slug}", postHandler.ViewPost)
 	http.HandleFunc("/post/delete/{slug}", postHandler.DeletePost)
 	http.HandleFunc("/post/edit/{slug}", postHandler.EditPost)
-	http.HandleFunc("/{tag}", postHandler.GetPostsByTag)
+	http.HandleFunc("/{tag}", postHandler.GetPosts)
 
 	http.HandleFunc("/tags", tagHandler.GetTags)
 	http.HandleFunc("/tags/search/{tag}", tagHandler.SearchTag)

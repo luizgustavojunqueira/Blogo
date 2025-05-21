@@ -5,8 +5,8 @@ order by created_at desc
 ;
 
 -- name: CreatePost :one
-insert into posts (title, toc, content, parsed_content, description, slug, created_at, modified_at)
-values ($1, $2, $3, $4, $5, $6, $7, $8)
+insert into posts (title, toc, content, parsed_content, description, slug, created_at, modified_at, readtime)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 returning *
 ;
 
@@ -23,8 +23,8 @@ where slug = $1
 
 -- name: UpdatePostBySlug :one
 update posts
-set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7
-where slug = $8
+set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7, readtime = $8
+where slug = $9
 returning *
 ;
 
@@ -46,6 +46,7 @@ select
     p.parsed_content,
     p.slug,
     p.description,
+    p.readtime,
     p.created_at,
     p.modified_at,
     t.id as tag_id,

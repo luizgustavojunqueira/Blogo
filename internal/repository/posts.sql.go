@@ -12,9 +12,9 @@ import (
 )
 
 const createPost = `-- name: CreatePost :one
-insert into posts (title, toc, content, parsed_content, description, slug, created_at, modified_at)
-values ($1, $2, $3, $4, $5, $6, $7, $8)
-returning id, title, content, toc, parsed_content, slug, created_at, modified_at, description
+insert into posts (title, toc, content, parsed_content, description, slug, created_at, modified_at, readtime)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+returning id, title, content, toc, parsed_content, slug, created_at, modified_at, description, readtime
 `
 
 type CreatePostParams struct {
@@ -26,6 +26,7 @@ type CreatePostParams struct {
 	Slug          string
 	CreatedAt     pgtype.Timestamp
 	ModifiedAt    pgtype.Timestamp
+	Readtime      pgtype.Int4
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
@@ -38,6 +39,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		arg.Slug,
 		arg.CreatedAt,
 		arg.ModifiedAt,
+		arg.Readtime,
 	)
 	var i Post
 	err := row.Scan(
@@ -50,6 +52,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.CreatedAt,
 		&i.ModifiedAt,
 		&i.Description,
+		&i.Readtime,
 	)
 	return i, err
 }
@@ -65,7 +68,7 @@ func (q *Queries) DeletePostBySlug(ctx context.Context, slug string) error {
 }
 
 const getPostBySlug = `-- name: GetPostBySlug :one
-select id, title, content, toc, parsed_content, slug, created_at, modified_at, description
+select id, title, content, toc, parsed_content, slug, created_at, modified_at, description, readtime
 from posts
 where slug = $1
 `
@@ -83,12 +86,13 @@ func (q *Queries) GetPostBySlug(ctx context.Context, slug string) (Post, error) 
 		&i.CreatedAt,
 		&i.ModifiedAt,
 		&i.Description,
+		&i.Readtime,
 	)
 	return i, err
 }
 
 const getPosts = `-- name: GetPosts :many
-select id, title, content, toc, parsed_content, slug, created_at, modified_at, description
+select id, title, content, toc, parsed_content, slug, created_at, modified_at, description, readtime
 from posts
 order by created_at desc
 `
@@ -112,6 +116,7 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 			&i.CreatedAt,
 			&i.ModifiedAt,
 			&i.Description,
+			&i.Readtime,
 		); err != nil {
 			return nil, err
 		}
@@ -124,7 +129,7 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 }
 
 const getPostsByTag = `-- name: GetPostsByTag :many
-select p.id, p.title, p.content, p.toc, p.parsed_content, p.slug, p.created_at, p.modified_at, p.description
+select p.id, p.title, p.content, p.toc, p.parsed_content, p.slug, p.created_at, p.modified_at, p.description, p.readtime
 from posts p
 join tags_posts tp on p.id = tp.post_id
 join tags t on t.id = tp.tag_id
@@ -151,6 +156,7 @@ func (q *Queries) GetPostsByTag(ctx context.Context, name string) ([]Post, error
 			&i.CreatedAt,
 			&i.ModifiedAt,
 			&i.Description,
+			&i.Readtime,
 		); err != nil {
 			return nil, err
 		}
@@ -171,6 +177,7 @@ select
     p.parsed_content,
     p.slug,
     p.description,
+    p.readtime,
     p.created_at,
     p.modified_at,
     t.id as tag_id,
@@ -199,6 +206,7 @@ type ListPostsWithTagsRow struct {
 	ParsedContent string
 	Slug          string
 	Description   pgtype.Text
+	Readtime      pgtype.Int4
 	CreatedAt     pgtype.Timestamp
 	ModifiedAt    pgtype.Timestamp
 	TagID         pgtype.Int8
@@ -224,6 +232,7 @@ func (q *Queries) ListPostsWithTags(ctx context.Context, tagName pgtype.Text) ([
 			&i.ParsedContent,
 			&i.Slug,
 			&i.Description,
+			&i.Readtime,
 			&i.CreatedAt,
 			&i.ModifiedAt,
 			&i.TagID,
@@ -243,9 +252,9 @@ func (q *Queries) ListPostsWithTags(ctx context.Context, tagName pgtype.Text) ([
 
 const updatePostBySlug = `-- name: UpdatePostBySlug :one
 update posts
-set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7
-where slug = $8
-returning id, title, content, toc, parsed_content, slug, created_at, modified_at, description
+set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7, readtime = $8
+where slug = $9
+returning id, title, content, toc, parsed_content, slug, created_at, modified_at, description, readtime
 `
 
 type UpdatePostBySlugParams struct {
@@ -256,6 +265,7 @@ type UpdatePostBySlugParams struct {
 	ParsedContent string
 	ModifiedAt    pgtype.Timestamp
 	Description   pgtype.Text
+	Readtime      pgtype.Int4
 	Slug_2        string
 }
 
@@ -268,6 +278,7 @@ func (q *Queries) UpdatePostBySlug(ctx context.Context, arg UpdatePostBySlugPara
 		arg.ParsedContent,
 		arg.ModifiedAt,
 		arg.Description,
+		arg.Readtime,
 		arg.Slug_2,
 	)
 	var i Post
@@ -281,6 +292,7 @@ func (q *Queries) UpdatePostBySlug(ctx context.Context, arg UpdatePostBySlugPara
 		&i.CreatedAt,
 		&i.ModifiedAt,
 		&i.Description,
+		&i.Readtime,
 	)
 	return i, err
 }

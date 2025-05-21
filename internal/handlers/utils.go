@@ -96,6 +96,7 @@ func generatePostsWithTags(rows []repository.ListPostsWithTagsRow) []repository.
 				ParsedContent: row.ParsedContent,
 				Slug:          row.Slug,
 				Description:   row.Description,
+				Readtime:      row.Readtime,
 				CreatedAt:     row.CreatedAt,
 				ModifiedAt:    row.ModifiedAt,
 				Tags:          []repository.Tag{},

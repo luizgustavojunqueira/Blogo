@@ -9,6 +9,7 @@ type PostWithTags struct {
 	Toc           string
 	ParsedContent string
 	Slug          string
+	Readtime      pgtype.Int4
 	CreatedAt     pgtype.Timestamp
 	ModifiedAt    pgtype.Timestamp
 	Description   pgtype.Text

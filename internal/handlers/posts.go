@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -150,12 +151,16 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	words := len(strings.Fields(content))
+	readTime := int(math.Ceil(float64(words) / 200.0))
+
 	post := repository.CreatePostParams{
 		Title:         title,
 		Toc:           toc,
 		Content:       content,
 		ParsedContent: parsedContent.String(),
 		Description:   pgtype.Text{String: description, Valid: true},
+		Readtime:      pgtype.Int4{Int32: int32(readTime), Valid: true},
 		Slug:          slug,
 		CreatedAt:     pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
@@ -228,6 +233,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		ModifiedAt:    createdPost.ModifiedAt,
 		ParsedContent: createdPost.ParsedContent,
 		Description:   createdPost.Description,
+		Readtime:      createdPost.Readtime,
 		Content:       createdPost.Content,
 		Toc:           createdPost.Toc,
 		Tags:          createdTags,
@@ -354,10 +360,14 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	words := len(strings.Fields(content))
+	readTime := int(math.Ceil(float64(words) / 200.0))
+
 	post := repository.PostWithTags{
 		Title:         title,
 		Content:       content,
 		ParsedContent: buf.String(),
+		Readtime:      pgtype.Int4{Int32: int32(readTime), Valid: true},
 		Toc:           toc,
 		Slug:          slug,
 		Tags:          postTags,
@@ -396,6 +406,7 @@ func (h *PostHandler) ViewPost(w http.ResponseWriter, r *http.Request) {
 		ParsedContent: post.ParsedContent,
 		Description:   post.Description,
 		Content:       post.Content,
+		Readtime:      post.Readtime,
 		Toc:           post.Toc,
 		Tags:          postTags,
 	}
@@ -469,12 +480,16 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	words := len(strings.Fields(newContent))
+	readTime := int(math.Ceil(float64(words) / 200.0))
+
 	post := repository.UpdatePostBySlugParams{
 		Title:         newTitle,
 		Toc:           toc,
 		Slug:          newSlug,
 		Slug_2:        slug,
 		Description:   pgtype.Text{String: newDescription, Valid: true},
+		Readtime:      pgtype.Int4{Int32: int32(readTime), Valid: true},
 		Content:       newContent,
 		ParsedContent: parsedContent.String(),
 		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},

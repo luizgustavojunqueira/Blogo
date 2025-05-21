@@ -18,6 +18,7 @@ type Post struct {
 	CreatedAt     pgtype.Timestamp
 	ModifiedAt    pgtype.Timestamp
 	Description   pgtype.Text
+	Readtime      pgtype.Int4
 }
 
 type Tag struct {

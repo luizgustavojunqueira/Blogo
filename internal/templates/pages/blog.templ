@@ -3,6 +3,7 @@ package pages
 import (
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 	"github.com/luizgustavojunqueira/Blogo/internal/templates/components"
+	"strconv"
 )
 
 // Root component that wraps all content
@@ -47,7 +48,22 @@ templ MainPage(blogname, title string, posts []repository.PostWithTags, authenti
 		</section>
 	}
 	<ul id="posts-list" class="flex min-h-screen flex-col items-center">
+		{{ currentPostYear := 0 }}
+		{{ currentPostMonth := "January" }}
 		for _, post := range posts {
+			if post.CreatedAt.Time.Year() != currentPostYear  || post.CreatedAt.Time.Month().String() != currentPostMonth {
+				{{ 	currentPostMonth = post.CreatedAt.Time.Month().String() }}
+				{{ 	currentPostYear = post.CreatedAt.Time.Year() }}
+				<section class="w-full max-w-[min(80ch,100%)] flex flex-row items-center mt-6 mb-2">
+					<span
+						class="relative inline-block bg-darkgray dark:bg-slate-100 text-slate-100 dark:text-darkgray
+         px-4 py-2 rounded-r-md"
+					>
+						{ currentPostMonth }
+						{ strconv.Itoa(currentPostYear) }
+					</span>
+				</section>
+			}
 			@components.PostCard(post, authenticated)
 		}
 	</ul>

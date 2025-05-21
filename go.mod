@@ -3,7 +3,7 @@ module github.com/luizgustavojunqueira/Blogo
 go 1.23.5
 
 require (
-	github.com/a-h/templ v0.3.833
+	github.com/a-h/templ v0.3.865
 	github.com/alecthomas/chroma/v2 v2.2.0
 	github.com/golang-migrate/migrate/v4 v4.18.2
 	github.com/jackc/pgx/v5 v5.7.2
@@ -24,6 +24,6 @@ require (
 	github.com/stretchr/testify v1.10.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/sync v0.13.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 )

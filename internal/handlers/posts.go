@@ -101,7 +101,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 
 	posts := generatePostsWithTags(rows)
 
-	mainPage := pages.MainPage(h.blogName, h.pagetitle, posts, authenticated, "")
+	mainPage := pages.MainPage(h.blogName, h.pagetitle, posts, authenticated, tagName.String)
 
 	root := pages.Root(h.blogName, mainPage)
 

@@ -80,7 +80,7 @@ func (h *PostHandler) isAuthenticated(r *http.Request) bool {
 	return authenticated
 }
 
-func generatePostsWithTags(rows []repository.ListPostsWithTagsRow) []repository.PostWithTags {
+func generatePostsWithTags(rows []repository.GetPostsByTagRow) []repository.PostWithTags {
 	result := make([]repository.PostWithTags, 0, len(rows))
 	var currentPost *repository.PostWithTags
 

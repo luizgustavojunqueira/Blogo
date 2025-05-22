@@ -16,12 +16,10 @@ templ PostCard(post repository.PostWithTags, authenticated bool) {
 					</h1>
 					<p class="m-1 sm:m-3 sm:my-0 text-[0.75rem] sm:text-md">
 						{ post.CreatedAt.Time.Format("Jan 01, 2006, at 15:04") }
-						if readtime, err := post.Readtime.Int64Value(); err == nil {
-							· 
-							<span class="font-bold">
-								{ strconv.Itoa(int(readtime.Int64)) + " min" }
-							</span>
-						}
+						· 
+						<span class="font-bold">
+							{ strconv.Itoa(int(post.Readtime.Int64)) + " min" }
+						</span>
 					</p>
 				</section>
 				if authenticated {

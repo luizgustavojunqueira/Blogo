@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 	"github.com/luizgustavojunqueira/Blogo/internal/templates/components"
 	"github.com/luizgustavojunqueira/Blogo/internal/templates/pages"
@@ -42,8 +42,7 @@ type PostRepository interface {
 	GetPostBySlug(ctx context.Context, slug string) (repository.Post, error)
 	DeletePostBySlug(ctx context.Context, slug string) error
 	UpdatePostBySlug(ctx context.Context, arg repository.UpdatePostBySlugParams) (repository.Post, error)
-	GetPostsByTag(ctx context.Context, tag string) ([]repository.Post, error)
-	ListPostsWithTags(ctx context.Context, tag pgtype.Text) ([]repository.ListPostsWithTagsRow, error)
+	GetPostsByTag(ctx context.Context, tagName sql.NullString) ([]repository.GetPostsByTagRow, error)
 }
 
 type Auth interface {
@@ -86,13 +85,16 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 
 	tag := r.PathValue("tag")
 
-	tagName := pgtype.Text{String: tag, Valid: true}
-
-	if tag == "" {
-		tagName = pgtype.Text{String: "", Valid: false}
+	tagName := sql.NullString{
+		String: tag,
+		Valid:  true,
 	}
 
-	rows, err := h.repository.ListPostsWithTags(ctx, tagName)
+	if tag == "" {
+		tagName = sql.NullString{String: "", Valid: false}
+	}
+
+	rows, err := h.repository.GetPostsByTag(ctx, tagName)
 	if err != nil {
 		h.logger.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -159,11 +161,11 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		Toc:           toc,
 		Content:       content,
 		ParsedContent: parsedContent.String(),
-		Description:   pgtype.Text{String: description, Valid: true},
-		Readtime:      pgtype.Int4{Int32: int32(readTime), Valid: true},
+		Description:   sql.NullString{String: description, Valid: true},
+		Readtime:      sql.NullInt64{Int64: int64(readTime), Valid: true},
 		Slug:          slug,
-		CreatedAt:     pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
-		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+		CreatedAt:     sql.NullTime{Time: time.Now().In(h.location), Valid: true},
+		ModifiedAt:    sql.NullTime{Time: time.Now().In(h.location), Valid: true},
 	}
 
 	createdPost, err := h.repository.CreatePost(ctx, post)
@@ -188,11 +190,18 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 			h.logger.Printf("Creating tag: %s\n", tagName)
 
-			tag, err := h.tagsRepo.CreateTagIfNotExists(ctx, repository.CreateTagIfNotExistsParams{
+			err := h.tagsRepo.CreateTagIfNotExists(ctx, repository.CreateTagIfNotExistsParams{
 				Name:       tagName,
-				CreatedAt:  pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
-				ModifiedAt: pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+				CreatedAt:  sql.NullTime{Time: time.Now().In(h.location), Valid: true},
+				ModifiedAt: sql.NullTime{Time: time.Now().In(h.location), Valid: true},
 			})
+			if err != nil {
+				h.logger.Println(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			tag, err := h.tagsRepo.GetTagByName(ctx, tagName)
 			if err != nil {
 				h.logger.Println(err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -203,7 +212,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 			err = h.tagsRepo.AddTagToPost(ctx, repository.AddTagToPostParams{
 				PostID: createdPost.ID,
-				TagID:  tag[0].ID,
+				TagID:  tag.ID,
 			})
 			if err != nil {
 				h.logger.Println(err)
@@ -212,10 +221,10 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 			}
 
 			createdTag := repository.Tag{
-				ID:         tag[0].ID,
-				Name:       tag[0].Name,
-				CreatedAt:  tag[0].CreatedAt,
-				ModifiedAt: tag[0].ModifiedAt,
+				ID:         tag.ID,
+				Name:       tag.Name,
+				CreatedAt:  tag.CreatedAt,
+				ModifiedAt: tag.ModifiedAt,
 			}
 
 			createdTags = append(createdTags, createdTag)
@@ -353,8 +362,8 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 			}
 			tag := repository.Tag{
 				Name:       tagName,
-				CreatedAt:  pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
-				ModifiedAt: pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+				CreatedAt:  sql.NullTime{Time: time.Now().In(h.location), Valid: true},
+				ModifiedAt: sql.NullTime{Time: time.Now().In(h.location), Valid: true},
 			}
 			postTags = append(postTags, tag)
 		}
@@ -367,7 +376,7 @@ func (h *PostHandler) ParseMarkdown(w http.ResponseWriter, r *http.Request) {
 		Title:         title,
 		Content:       content,
 		ParsedContent: buf.String(),
-		Readtime:      pgtype.Int4{Int32: int32(readTime), Valid: true},
+		Readtime:      sql.NullInt64{Int64: int64(readTime), Valid: true},
 		Toc:           toc,
 		Slug:          slug,
 		Tags:          postTags,
@@ -486,13 +495,13 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	post := repository.UpdatePostBySlugParams{
 		Title:         newTitle,
 		Toc:           toc,
-		Slug:          newSlug,
-		Slug_2:        slug,
-		Description:   pgtype.Text{String: newDescription, Valid: true},
-		Readtime:      pgtype.Int4{Int32: int32(readTime), Valid: true},
+		Slug:          slug,
 		Content:       newContent,
+		NewSlug:       newSlug,
+		Description:   sql.NullString{String: newDescription, Valid: true},
+		Readtime:      sql.NullInt64{Int64: int64(readTime), Valid: true},
 		ParsedContent: parsedContent.String(),
-		ModifiedAt:    pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+		ModifiedAt:    sql.NullTime{Time: time.Now().In(h.location), Valid: true},
 	}
 
 	updatedPost, err := h.repository.UpdatePostBySlug(ctx, post)
@@ -516,11 +525,18 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 			if tagName == "" {
 				continue
 			}
-			tag, err := h.tagsRepo.CreateTagIfNotExists(ctx, repository.CreateTagIfNotExistsParams{
+			err := h.tagsRepo.CreateTagIfNotExists(ctx, repository.CreateTagIfNotExistsParams{
 				Name:       tagName,
-				CreatedAt:  pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
-				ModifiedAt: pgtype.Timestamp{Time: time.Now().In(h.location), Valid: true},
+				CreatedAt:  sql.NullTime{Time: time.Now().In(h.location), Valid: true},
+				ModifiedAt: sql.NullTime{Time: time.Now().In(h.location), Valid: true},
 			})
+			if err != nil {
+				h.logger.Println(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			tag, err := h.tagsRepo.GetTagByName(ctx, tagName)
 			if err != nil {
 				h.logger.Println(err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -529,7 +545,7 @@ func (h *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 
 			err = h.tagsRepo.AddTagToPost(ctx, repository.AddTagToPostParams{
 				PostID: updatedPost.ID,
-				TagID:  tag[0].ID,
+				TagID:  tag.ID,
 			})
 		}
 	}

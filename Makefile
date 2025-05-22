@@ -10,7 +10,7 @@ run: build database
 	@echo "Running..."
 	./bin/$(APP_NAME)
 
-dev: database
+dev: 
 	@echo "Running in dev mode..."
 	air
 

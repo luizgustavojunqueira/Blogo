@@ -2,18 +2,19 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 )
 
 type TagRepository interface {
 	GetTags(ctx context.Context) ([]repository.Tag, error)
-	SearchTags(context.Context, pgtype.Text) ([]string, error)
-	CreateTagIfNotExists(context.Context, repository.CreateTagIfNotExistsParams) ([]repository.CreateTagIfNotExistsRow, error)
+	SearchTags(context.Context, sql.NullString) ([]string, error)
+	CreateTagIfNotExists(context.Context, repository.CreateTagIfNotExistsParams) error
+	GetTagByName(ctx context.Context, name string) (repository.Tag, error)
 	AddTagToPost(ctx context.Context, params repository.AddTagToPostParams) error
 	GetTagsByPost(ctx context.Context, slug string) ([]repository.Tag, error)
 	ClearPostTagsBySlug(ctx context.Context, slug string) error
@@ -58,7 +59,7 @@ func (h *TagsHandler) SearchTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tags, err := h.repository.SearchTags(ctx, pgtype.Text{String: tag, Valid: true})
+	tags, err := h.repository.SearchTags(ctx, sql.NullString{String: tag, Valid: true})
 	if err != nil {
 		h.logger.Println("Error searching for tag:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

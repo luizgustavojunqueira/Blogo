@@ -30,39 +30,39 @@ type AuthConfig struct {
 // It returns an error if the configuration is invalid.
 func NewAuth(config AuthConfig) (*Auth, error) {
 	if config.Username == "" || config.Password == "" || config.SecretKey == "" || config.CookieName == "" || config.TokenValidity == 0 {
-		return nil, fmt.Errorf("Invalid parameters")
+		return nil, fmt.Errorf("invalid parameters")
 	}
 
 	if config.TokenValidity < 60 {
-		return nil, fmt.Errorf("Token validity must be at least 60 seconds")
+		return nil, fmt.Errorf("token validity must be at least 60 seconds")
 	}
 
 	if len(config.SecretKey) < 32 {
-		return nil, fmt.Errorf("Secret key must be at least 32 characters")
+		return nil, fmt.Errorf("secret key must be at least 32 characters")
 	}
 
 	if len(config.CookieName) < 8 {
-		return nil, fmt.Errorf("Cookie name must be at least 8 characters")
+		return nil, fmt.Errorf("cookie name must be at least 8 characters")
 	}
 
 	if strings.Contains(config.CookieName, ":") {
-		return nil, fmt.Errorf("Cookie name cannot contain ':'")
+		return nil, fmt.Errorf("cookie name cannot contain ':'")
 	}
 
 	if strings.Contains(config.Username, ":") {
-		return nil, fmt.Errorf("Username cannot contain ':'")
+		return nil, fmt.Errorf("username cannot contain ':'")
 	}
 
 	if config.Username == config.Password {
-		return nil, fmt.Errorf("Username and password must be different")
+		return nil, fmt.Errorf("username and password must be different")
 	}
 
 	if len(config.Password) < 8 {
-		return nil, fmt.Errorf("Password must be at least 8 characters")
+		return nil, fmt.Errorf("password must be at least 8 characters")
 	}
 
 	if len(config.Username) < 4 {
-		return nil, fmt.Errorf("Username must be at least 4 characters")
+		return nil, fmt.Errorf("username must be at least 4 characters")
 	}
 
 	return &Auth{

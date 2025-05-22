@@ -5,7 +5,7 @@
 package repository
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"database/sql"
 )
 
 type Post struct {
@@ -15,22 +15,22 @@ type Post struct {
 	Toc           string
 	ParsedContent string
 	Slug          string
-	CreatedAt     pgtype.Timestamp
-	ModifiedAt    pgtype.Timestamp
-	Description   pgtype.Text
-	Readtime      pgtype.Int4
+	CreatedAt     sql.NullTime
+	ModifiedAt    sql.NullTime
+	Description   sql.NullString
+	Readtime      sql.NullInt64
 }
 
 type Tag struct {
 	ID         int64
 	Name       string
-	CreatedAt  pgtype.Timestamp
-	ModifiedAt pgtype.Timestamp
+	CreatedAt  sql.NullTime
+	ModifiedAt sql.NullTime
 }
 
 type TagsPost struct {
 	TagID      int64
 	PostID     int64
-	CreatedAt  pgtype.Timestamp
-	ModifiedAt pgtype.Timestamp
+	CreatedAt  sql.NullTime
+	ModifiedAt sql.NullTime
 }

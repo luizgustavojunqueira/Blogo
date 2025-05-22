@@ -7,13 +7,14 @@ package repository
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
+	"database/sql"
 )
 
 const createPost = `-- name: CreatePost :one
+;
+
 insert into posts (title, toc, content, parsed_content, description, slug, created_at, modified_at, readtime)
-values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
 returning id, title, content, toc, parsed_content, slug, created_at, modified_at, description, readtime
 `
 
@@ -22,15 +23,15 @@ type CreatePostParams struct {
 	Toc           string
 	Content       string
 	ParsedContent string
-	Description   pgtype.Text
+	Description   sql.NullString
 	Slug          string
-	CreatedAt     pgtype.Timestamp
-	ModifiedAt    pgtype.Timestamp
-	Readtime      pgtype.Int4
+	CreatedAt     sql.NullTime
+	ModifiedAt    sql.NullTime
+	Readtime      sql.NullInt64
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
-	row := q.db.QueryRow(ctx, createPost,
+	row := q.db.QueryRowContext(ctx, createPost,
 		arg.Title,
 		arg.Toc,
 		arg.Content,
@@ -58,23 +59,27 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 }
 
 const deletePostBySlug = `-- name: DeletePostBySlug :exec
+;
+
 delete from posts
-where slug = $1
+where slug =?1
 `
 
 func (q *Queries) DeletePostBySlug(ctx context.Context, slug string) error {
-	_, err := q.db.Exec(ctx, deletePostBySlug, slug)
+	_, err := q.db.ExecContext(ctx, deletePostBySlug, slug)
 	return err
 }
 
 const getPostBySlug = `-- name: GetPostBySlug :one
+;
+
 select id, title, content, toc, parsed_content, slug, created_at, modified_at, description, readtime
 from posts
-where slug = $1
+where slug =?1
 `
 
 func (q *Queries) GetPostBySlug(ctx context.Context, slug string) (Post, error) {
-	row := q.db.QueryRow(ctx, getPostBySlug, slug)
+	row := q.db.QueryRowContext(ctx, getPostBySlug, slug)
 	var i Post
 	err := row.Scan(
 		&i.ID,
@@ -98,7 +103,7 @@ order by created_at desc
 `
 
 func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
-	rows, err := q.db.Query(ctx, getPosts)
+	rows, err := q.db.QueryContext(ctx, getPosts)
 	if err != nil {
 		return nil, err
 	}
@@ -121,6 +126,9 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -129,46 +137,8 @@ func (q *Queries) GetPosts(ctx context.Context) ([]Post, error) {
 }
 
 const getPostsByTag = `-- name: GetPostsByTag :many
-select p.id, p.title, p.content, p.toc, p.parsed_content, p.slug, p.created_at, p.modified_at, p.description, p.readtime
-from posts p
-join tags_posts tp on p.id = tp.post_id
-join tags t on t.id = tp.tag_id
-where t.name = $1
-order by p.created_at desc
-`
+;
 
-func (q *Queries) GetPostsByTag(ctx context.Context, name string) ([]Post, error) {
-	rows, err := q.db.Query(ctx, getPostsByTag, name)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Post
-	for rows.Next() {
-		var i Post
-		if err := rows.Scan(
-			&i.ID,
-			&i.Title,
-			&i.Content,
-			&i.Toc,
-			&i.ParsedContent,
-			&i.Slug,
-			&i.CreatedAt,
-			&i.ModifiedAt,
-			&i.Description,
-			&i.Readtime,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listPostsWithTags = `-- name: ListPostsWithTags :many
 select
     p.id,
     p.title,
@@ -188,42 +158,42 @@ from posts p
 left join tags_posts tp on p.id = tp.post_id
 left join tags t on tp.tag_id = t.id
 where
-    $1::text is null
+    cast(?1 as text) is null
     or p.id in (
         select tp2.post_id
         from tags_posts tp2
         join tags t2 on tp2.tag_id = t2.id
-        where t2.name = $1
+        where t2.name = ?1
     )
 order by p.created_at desc, p.id, t.id
 `
 
-type ListPostsWithTagsRow struct {
+type GetPostsByTagRow struct {
 	ID            int64
 	Title         string
 	Content       string
 	Toc           string
 	ParsedContent string
 	Slug          string
-	Description   pgtype.Text
-	Readtime      pgtype.Int4
-	CreatedAt     pgtype.Timestamp
-	ModifiedAt    pgtype.Timestamp
-	TagID         pgtype.Int8
-	TagName       pgtype.Text
-	TagCreatedAt  pgtype.Timestamp
-	TagModifiedAt pgtype.Timestamp
+	Description   sql.NullString
+	Readtime      sql.NullInt64
+	CreatedAt     sql.NullTime
+	ModifiedAt    sql.NullTime
+	TagID         sql.NullInt64
+	TagName       sql.NullString
+	TagCreatedAt  sql.NullTime
+	TagModifiedAt sql.NullTime
 }
 
-func (q *Queries) ListPostsWithTags(ctx context.Context, tagName pgtype.Text) ([]ListPostsWithTagsRow, error) {
-	rows, err := q.db.Query(ctx, listPostsWithTags, tagName)
+func (q *Queries) GetPostsByTag(ctx context.Context, tagName sql.NullString) ([]GetPostsByTagRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPostsByTag, tagName)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListPostsWithTagsRow
+	var items []GetPostsByTagRow
 	for rows.Next() {
-		var i ListPostsWithTagsRow
+		var i GetPostsByTagRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
@@ -244,6 +214,9 @@ func (q *Queries) ListPostsWithTags(ctx context.Context, tagName pgtype.Text) ([
 		}
 		items = append(items, i)
 	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -251,35 +224,37 @@ func (q *Queries) ListPostsWithTags(ctx context.Context, tagName pgtype.Text) ([
 }
 
 const updatePostBySlug = `-- name: UpdatePostBySlug :one
+;
+
 update posts
-set title = $1, toc = $2, slug = $3, content = $4, parsed_content = $5, modified_at = $6, description = $7, readtime = $8
-where slug = $9
+set title = ?1, toc = ?2, slug = ?3, content = ?4, parsed_content = ?5, modified_at = ?6, description = ?7, readtime = ?8
+where slug = ?9
 returning id, title, content, toc, parsed_content, slug, created_at, modified_at, description, readtime
 `
 
 type UpdatePostBySlugParams struct {
 	Title         string
 	Toc           string
-	Slug          string
+	NewSlug       string
 	Content       string
 	ParsedContent string
-	ModifiedAt    pgtype.Timestamp
-	Description   pgtype.Text
-	Readtime      pgtype.Int4
-	Slug_2        string
+	ModifiedAt    sql.NullTime
+	Description   sql.NullString
+	Readtime      sql.NullInt64
+	Slug          string
 }
 
 func (q *Queries) UpdatePostBySlug(ctx context.Context, arg UpdatePostBySlugParams) (Post, error) {
-	row := q.db.QueryRow(ctx, updatePostBySlug,
+	row := q.db.QueryRowContext(ctx, updatePostBySlug,
 		arg.Title,
 		arg.Toc,
-		arg.Slug,
+		arg.NewSlug,
 		arg.Content,
 		arg.ParsedContent,
 		arg.ModifiedAt,
 		arg.Description,
 		arg.Readtime,
-		arg.Slug_2,
+		arg.Slug,
 	)
 	var i Post
 	err := row.Scan(

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"database/sql"
 	"log"
 	"os"
 	"time"
@@ -11,12 +11,10 @@ import (
 	"github.com/luizgustavojunqueira/Blogo/pkg/blogo"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	"github.com/joho/godotenv"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
@@ -27,22 +25,22 @@ func main() {
 		}
 	}
 
-	pool, err := pgxpool.New(context.Background(), os.Getenv("DB_URL"))
+	db, err := sql.Open("sqlite3", os.Getenv("DB_PATH"))
 	if err != nil {
 		log.Panic(err)
 	}
-	defer pool.Close()
 
-	db := stdlib.OpenDBFromPool(pool)
+	driver, errDriver := sqlite3.WithInstance(db, &sqlite3.Config{
+		DatabaseName: "blog.db",
+	})
 
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-	if err != nil {
-		log.Panic(err)
+	if errDriver != nil {
+		log.Panic(errDriver)
 	}
 
 	m, errMigrate := migrate.NewWithDatabaseInstance(
 		"file://internal/repository/migrations",
-		"postgres", driver)
+		"sqlite3", driver)
 
 	if errMigrate != nil {
 		log.Panic(errMigrate)
@@ -52,7 +50,7 @@ func main() {
 		log.Panic("Failed to run migrations: ", err)
 	}
 
-	queries := repository.New(pool)
+	queries := repository.New(db)
 
 	location, err := time.LoadLocation("America/Sao_Paulo")
 	if err != nil {

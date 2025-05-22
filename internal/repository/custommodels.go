@@ -1,6 +1,8 @@
 package repository
 
-import "github.com/jackc/pgx/v5/pgtype"
+import (
+	"database/sql"
+)
 
 type PostWithTags struct {
 	ID            int64
@@ -9,9 +11,9 @@ type PostWithTags struct {
 	Toc           string
 	ParsedContent string
 	Slug          string
-	Readtime      pgtype.Int4
-	CreatedAt     pgtype.Timestamp
-	ModifiedAt    pgtype.Timestamp
-	Description   pgtype.Text
+	Readtime      sql.NullInt64
+	CreatedAt     sql.NullTime
+	ModifiedAt    sql.NullTime
+	Description   sql.NullString
 	Tags          []Tag
 }

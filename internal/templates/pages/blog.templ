@@ -6,38 +6,11 @@ import (
 	"strconv"
 )
 
-// Root component that wraps all content
-templ Root(title string, component templ.Component) {
-	<!DOCTYPE html>
-	<html
-		lang="pt-br"
-		x-data="{darkMode: localStorage.getItem('dark') === 'true'}"
-		x-init="$watch('darkMode', val => localStorage.setItem('dark', val))"
-		x-bind:class="{ 'dark': darkMode }"
-		class="light dark:bg-darkgray font-roboto min-h-screen scroll-smooth bg-slate-100 text-justify text-lg"
-	>
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<link href="/static/styles.css" rel="stylesheet"/>
-			<link rel="icon" href="/static/images/favicon.png"/>
-			<script src="/static/js/htmx.js"></script>
-			<script src="/static/js/htmx-response-targets.js"></script>
-			<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-			<title>{ title }</title>
-		</head>
-		<body hx-ext="response-targets" class="dark:bg-darkgray min-h-screen bg-slate-100 text-black dark:text-white ">
-			@component
-		</body>
-	</html>
-}
-
 templ MainPage(blogname, title string, posts []repository.PostWithTags, authenticated bool, filterTag string) {
 	if authenticated {
 		@components.Header(blogname, []string{"New Post", "Logout"}, []string{"/editor", "/logout"})
 	} else {
-		@components.Header(blogname, []string{"Login"}, []string{"/login"})
+		@components.Header(blogname, []string{}, []string{})
 	}
 	if filterTag != "" {
 		<section class="w-full flex flex-col justify-center items-center ">
@@ -73,7 +46,7 @@ templ EditorPage(blogname, pagetitle string, post repository.PostWithTags, edit 
 	if authenticated {
 		@components.Header(blogname, []string{"Back to Home", "Logout"}, []string{"/", "/logout"})
 	} else {
-		@components.Header(blogname, []string{"Back to Home", "Login"}, []string{"/", "/login"})
+		@components.Header(blogname, []string{"Back to Home"}, []string{"/"})
 	}
 	<main class="grid max-h-[calc(100vh-var(--spacing)*17)] min-h-full grid-cols-2">
 		<form
@@ -156,7 +129,6 @@ templ EditorPage(blogname, pagetitle string, post repository.PostWithTags, edit 
 							></li>
 						</template>
 					</ul>
-					<!-- Tags selecionadas -->
 					<div class="mt-2 flex flex-wrap gap-2">
 						<template x-for="(tag, index) in selectedTags" :key="tag">
 							<div
@@ -174,7 +146,6 @@ templ EditorPage(blogname, pagetitle string, post repository.PostWithTags, edit 
 							</div>
 						</template>
 					</div>
-					<!-- Campo hidden para enviar as tags no form -->
 					<input
 						type="hidden"
 						name="tags"
@@ -250,7 +221,7 @@ templ PostPage(blogname, title string, post repository.PostWithTags, authenticat
 		@components.Header(blogname, []string{"Back to Home", "Edit", "Logout"}, []string{"/", "/editor/" + post.Slug,
 			"/logout"})
 	} else {
-		@components.Header(blogname, []string{"Back to Home", "Login"}, []string{"/", "/login"})
+		@components.Header(blogname, []string{"Back to Home"}, []string{"/"})
 	}
 	<section class="flex flex-col items-center justify-center p-0 pt-10 sm:p-4">
 		@components.Markdown(post)

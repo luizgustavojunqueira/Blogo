@@ -59,6 +59,8 @@ For deploying your blog, there is a dockerfile provided.
 - [x] Add read time
 - [x] Add posts tags
 - [x] Group posts by year and/or month
+- [ ] Post drafts
 - [ ] Redesign the post editor
 - [ ] Search by name and tag
+- [ ] Image support (have no idea how to do it)
 - [ ] Tests

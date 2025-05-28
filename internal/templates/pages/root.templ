@@ -1,0 +1,28 @@
+package pages
+
+// Root component that wraps all content
+templ Root(title string, component templ.Component) {
+	<!DOCTYPE html>
+	<html
+		lang="pt-br"
+		x-data="{darkMode: localStorage.getItem('dark') === 'true'}"
+		x-init="$watch('darkMode', val => localStorage.setItem('dark', val))"
+		x-bind:class="{ 'dark': darkMode }"
+		class="light dark:bg-darkgray font-roboto min-h-screen scroll-smooth bg-slate-100 text-justify text-lg"
+	>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<link href="/static/styles.css" rel="stylesheet"/>
+			<link rel="icon" href="/static/images/favicon.png"/>
+			<script src="/static/js/htmx.js"></script>
+			<script src="/static/js/htmx-response-targets.js"></script>
+			<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+			<title>{ title }</title>
+		</head>
+		<body hx-ext="response-targets" class="dark:bg-darkgray min-h-screen bg-slate-100 text-black dark:text-white ">
+			@component
+		</body>
+	</html>
+}

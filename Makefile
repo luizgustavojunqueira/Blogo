@@ -18,6 +18,14 @@ database:
 	@echo "Creating database..."
 	docker-compose up database -d
 
+sqlc: 
+	@echo "Generating SQLC code..."
+	sqlc generate
+
+templ:
+	@echo "Generating templates..."
+	templ generate
+
 test:
 	@echo "Running tests..."
 	go test ./...

@@ -3,3 +3,10 @@ tmp
 blog.db
 bin
 node_modules
+internal/repository/posts.sql.go
+internal/repository/tags.sql.go
+internal/static/styles.css
+internal/templates/components/header_templ.go
+internal/templates/components/post_templ.go
+internal/templates/pages/blog_templ.go
+internal/templates/pages/root_templ.go

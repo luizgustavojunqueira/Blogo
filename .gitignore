@@ -8,3 +8,4 @@ internal/repository/db.go
 internal/repository/models.go
 internal/static/styles.css
 internal/templates/**/*_templ.go
+blog.tar.gz

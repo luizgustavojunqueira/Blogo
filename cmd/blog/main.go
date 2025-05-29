@@ -12,19 +12,11 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
-	"github.com/joho/godotenv"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
-	// Load environment variables from .env file if not running on Railway
-	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
-		if err := godotenv.Load(); err != nil {
-			log.Println("No .env file found, using system environment variables")
-		}
-	}
-
 	db, err := sql.Open("sqlite3", os.Getenv("DB_PATH"))
 	if err != nil {
 		log.Panic(err)

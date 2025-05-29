@@ -1,0 +1,16 @@
+package pages
+
+import "github.com/luizgustavojunqueira/Blogo/internal/repository"
+import "github.com/luizgustavojunqueira/Blogo/internal/templates/components"
+
+templ PostPage(blogname, title string, post repository.PostWithTags, authenticated bool) {
+	if authenticated {
+		@components.Header(blogname, []string{"Back to Home", "Edit", "Logout"}, []string{"/", "/editor/" + post.Slug,
+			"/logout"})
+	} else {
+		@components.Header(blogname, []string{"Back to Home"}, []string{"/"})
+	}
+	<section class="flex flex-col items-center justify-center p-0 pt-10 sm:p-4">
+		@components.Markdown(post)
+	</section>
+}

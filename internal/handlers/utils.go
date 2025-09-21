@@ -28,7 +28,7 @@ func validatePost(title, content, slug string) error {
 		return fmt.Errorf("slug must be more than 5 characters")
 	}
 
-	if len(content) > 10000 {
+	if len(content) > 50000 {
 		return fmt.Errorf("content must be less than 10000 characters")
 	}
 	return nil

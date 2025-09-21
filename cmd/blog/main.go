@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/luizgustavojunqueira/Blogo/internal/auth"
 	"github.com/luizgustavojunqueira/Blogo/internal/repository"
 	"github.com/luizgustavojunqueira/Blogo/pkg/blogo"
@@ -17,6 +18,10 @@ import (
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables")
+	}
+
 	db, err := sql.Open("sqlite3", os.Getenv("DB_PATH"))
 	if err != nil {
 		log.Panic(err)

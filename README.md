@@ -59,8 +59,14 @@ For deploying your blog, there is a dockerfile provided.
 - [x] Add read time
 - [x] Add posts tags
 - [x] Group posts by year and/or month
+- [x] Caching
+- [x] HTTPS on aws
 - [ ] Post drafts
 - [ ] Redesign the post editor
 - [ ] Search by name and tag
 - [ ] Image support (have no idea how to do it)
+- [ ] Secure more. CSRF? Login rate limiting?
+- [ ] Custom 404 and 500 pages
+- [ ] Refactor some code
+- [ ] Refactor templates
 - [ ] Tests
